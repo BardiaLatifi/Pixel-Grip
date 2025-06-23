@@ -1,0 +1,167 @@
+* {
+  user-select: none;
+  box-sizing: content-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+#console-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 20px;
+  height: 100%;
+  background: #000;
+}
+
+#console-ui {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  width: 100vw;
+  max-width: 100vw;
+  height: auto;
+  padding: 10px;
+  background-color: #ccc;
+  box-sizing: border-box;
+}
+
+
+#left-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.left-side-buttons {
+  background-color: #333;
+  opacity: 0.8;
+  border: none;
+  border-radius: 2px;
+}
+
+#full-screen-btn {
+  margin-top: 5em;
+  padding: 0.8em;
+
+}
+
+#option-btn {
+  margin-bottom: 5em;
+  padding: 0.35em 1.1em;
+}
+
+#game-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 9;
+  max-width: 640px;
+  width: 100%;
+  background-color: #ababab;
+  overflow: hidden;
+}
+
+#right-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 75px;
+  height: 75px;
+  opacity: 0.8;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.button:hover {
+  opacity: 1;
+}
+
+.button:active {
+  background-color: #202020;
+}
+
+#joystick-container {
+  width: 100px;
+  height: 100px;
+  position: relative;
+}
+
+/* Initialization */
+#rotate-image {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  display: none;
+  pointer-events: none;
+}
+
+#fullscreen-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  max-width: 600px;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: none;
+  pointer-events: none;
+  /* Prevent accidental clicks */
+}
+
+
+
+/* Hidden state */
+.hidden {
+  display: none;
+}
+
+/* === Portrait Mode === */
+@media (orientation: portrait) {
+  #console-ui {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    height: 100dvh;
+    /* Dynamic viewport height */
+    width: 100vw;
+    padding: 0;
+    background: #000;
+  }
+
+  #left-side,
+  #right-side {
+    display: none;
+  }
+
+  #game-container {
+    width: 100vw;
+    aspect-ratio: 16 / 9;
+    background-color: #000;
+  }
+}

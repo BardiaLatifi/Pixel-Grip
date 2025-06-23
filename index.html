@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixel Grip</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Phaser CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
+    <!-- Nipple.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/nipplejs@0.9.0/dist/nipplejs.min.js"></script>
+  </head>
+  <body>
+    <!-- Console Body -->
+    <div id="console-wrapper">
+      <div id="console-ui">
+        <!-- Left Side -->
+        <div id="left-side">
+          <button id="option-btn" class="left-side-buttons"></button>
+          <div id="joystick-container"></div>
+          <button id="full-screen-btn" class="left-side-buttons"></button>
+        </div>
+        <!-- Display -->
+        <div id="game-container">
+          <img id="fullscreen-message" src="assets/ui/hold-fullscreen.png" style="display: none;" />
+        </div>
+        <!-- Right Side -->
+        <div id="right-side">
+          <button id="jump-button" class="button">1</button>
+          <button id="shoot-button" class="button">2</button>
+          <button id="run-button" class="button">3</button>
+        </div>
+      </div>
+    </div>
+    <img id="rotate-image" src="./assets/ui/phone-rotation.png" alt="Rotate your phone"/>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
