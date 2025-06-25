@@ -7,7 +7,10 @@ export class Initialization extends Phaser.Scene {
 
   preload() {
     // Preload the Phaser logo for use in BootScene
-    this.load.image('phaser-logo', 'assets/phaser-logo.png');
+    this.load.image('phaser-logo', 'assets/boot/phaser-logo.png');
+    this.load.image('pixelgrip-logo', 'assets/boot/pixel-grip-logo.png');
+    this.load.image('slogan', 'assets/boot/slogan.png');
+    this.load.image('press-option', 'assets/boot/press-option.png');
   }
 
   create() {
