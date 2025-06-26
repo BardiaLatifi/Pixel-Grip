@@ -5,27 +5,16 @@ export class BootScene extends Phaser.Scene {
   }
 
   create() {
-    // Phaser logo
-    const phaserLogo = this.add.image(this.scale.width / 2, this.scale.height / 2, 'phaser-logo')
-      .setOrigin(0.5)
-      .setAlpha(0);
+    // === Add Images ===
+    const centerX = this.scale.width / 2;
+    const centerY = this.scale.height / 2;
 
-    // Your logo (Pixel Grip)
-    const pgLogo = this.add.image(this.scale.width / 2, this.scale.height / 2, 'pixelgrip-logo')
-      .setOrigin(0.5)
-      .setAlpha(0);
+    const phaserLogo = this.add.image(centerX, centerY, 'phaser-logo').setOrigin(0.5).setAlpha(0);
+    this.pgLogo = this.add.image(centerX, centerY, 'pixelgrip-logo').setOrigin(0.5).setAlpha(0);
+    const slogan = this.add.image(centerX, centerY, 'slogan').setOrigin(0.5).setAlpha(0);
+    this.pressPrompt = this.add.image(centerX, centerY, 'press-option').setOrigin(0.5).setAlpha(0);
 
-    // Slogan (above your logo)
-    const slogan = this.add.image(this.scale.width / 2, this.scale.height / 2, 'slogan')
-      .setOrigin(0.5)
-      .setAlpha(0);
-
-    // Press Option button prompt
-    const pressPrompt = this.add.image(this.scale.width / 2, this.scale.height / 2, 'press-option')
-      .setOrigin(0.5)
-      .setAlpha(0);
-
-    // Step 1: Fade in Phaser logo
+    // === Step 1: Fade in Phaser logo ===
     this.tweens.add({
       targets: phaserLogo,
       alpha: 1,
@@ -33,22 +22,22 @@ export class BootScene extends Phaser.Scene {
       ease: 'Sine.easeIn',
       onComplete: () => {
         this.time.delayedCall(1500, () => {
-          // Step 2: Fade out Phaser logo
+          // === Step 2: Fade out Phaser logo ===
           this.tweens.add({
             targets: phaserLogo,
             alpha: 0,
             duration: 1000,
             ease: 'Sine.easeOut',
             onComplete: () => {
-              // Step 3: Fade in your logo
+              // === Step 3: Fade in your logo ===
               this.tweens.add({
-                targets: pgLogo,
+                targets: this.pgLogo,
                 alpha: 1,
                 duration: 1500,
                 ease: 'Sine.easeIn',
               });
 
-              // Step 4: Fade in slogan after logo
+              // === Step 4: Fade in slogan ===
               this.time.delayedCall(1500, () => {
                 this.tweens.add({
                   targets: slogan,
@@ -56,25 +45,23 @@ export class BootScene extends Phaser.Scene {
                   duration: 1500,
                   ease: 'Sine.easeIn',
                   onComplete: () => {
+                    // === Step 5: Hold slogan, then fade out ===
                     this.time.delayedCall(2000, () => {
-                      // Step 5: Fade out slogan
                       this.tweens.add({
                         targets: slogan,
                         alpha: 0,
                         duration: 1500,
                         ease: 'Sine.easeOut',
                         onComplete: () => {
-                          // Step 6: Show press option prompt
+                          // === Step 6: Show press prompt ===
                           this.tweens.add({
-                            targets: pressPrompt,
+                            targets: this.pressPrompt,
                             alpha: 1,
                             duration: 500,
                             ease: 'Sine.easeIn',
                             onComplete: () => {
-                              // Start blinking
-                              this.startBlinking(pressPrompt);
-                              // Enable button interaction
-                              this.enableOptionButton(pressPrompt);
+                              this.startBlinking(this.pressPrompt);
+                              this.enableOptionButton();
                             }
                           });
                         }
@@ -104,27 +91,39 @@ export class BootScene extends Phaser.Scene {
   stopBlinking(target) {
     if (this.blinkTween) {
       this.blinkTween.stop();
-      target.setAlpha(1); // Reset to fully visible
+      target.setAlpha(1);
     }
   }
 
-  enableOptionButton(prompt) {
+  enableOptionButton() {
     const btn = document.getElementById('option-btn');
     if (!btn) return;
 
     const handleHold = () => {
       if (!this.optionButtonHeld) {
         this.optionButtonHeld = true;
-        this.stopBlinking(prompt);
 
-        // Fade out prompt
+        this.stopBlinking(this.pressPrompt);
+
+        // === Step 7: Fade out prompt ===
         this.tweens.add({
-          targets: prompt,
+          targets: this.pressPrompt,
           alpha: 0,
-          duration: 800,
+          duration: 500,
           ease: 'Sine.easeOut',
           onComplete: () => {
-            this.scene.start('MainMenuScene');
+            // === Step 8: Fade out logo ===
+            this.tweens.add({
+              targets: this.pgLogo,
+              alpha: 0,
+              duration: 800,
+              ease: 'Sine.easeOut',
+              onComplete: () => {
+                this.time.delayedCall(100, () => {
+                  this.scene.start('MainMenuScene');
+                });
+              }
+            });
           }
         });
       }
