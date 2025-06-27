@@ -1,60 +1,94 @@
-export class DisplayManager {
-  constructor({ rotateImageId = 'rotate-image', fullscreenImageId = 'fullscreen-message', onReady = () => { } } = {}) {
-    this.rotateImage = document.getElementById(rotateImageId);
-    this.fullscreenImage = document.getElementById(fullscreenImageId);
-    this.onReady = onReady;
-    this.orientationTimeout = null;
-    this.bootStarted = false;
+export const DisplayManager = {
+  game: null,
+  currentSceneKey: null,
+  rotateImage: null,
+  fullscreenImage: null,
+  onReadyCallback: null,
 
-    this.updateMessage();
-    this.bindEvents();
-  }
+  initialize(game, onReadyCallback) {
+    this.game = game;
+    this.onReadyCallback = onReadyCallback;
 
-  bindEvents() {
-    window.addEventListener('orientationchange', () => this.handleOrientationChange());
-    window.addEventListener('resize', () => this.handleOrientationChange());
-    document.addEventListener('fullscreenchange', () => this.handleFullscreenChange());
-  }
+    this.rotateImage = document.getElementById('rotate-image');
+    this.fullscreenImage = document.getElementById('fullscreen-message');
 
-  isPortrait() {
-    return window.matchMedia('(orientation: portrait)').matches;
-  }
+    if (!this.rotateImage || !this.fullscreenImage) {
+      console.warn('DisplayManager: Missing DOM overlays (rotate-image or fullscreen-message)');
+    }
 
-  isFullscreen() {
-    return document.fullscreenElement !== null;
-  }
+    // Track active scene key on transitions
+    game.events.on('transitionstart', (fromScene, toScene) => {
+      this.currentSceneKey = toScene.scene.key;
+      console.log(`[DisplayManager] Transitioned to scene: ${this.currentSceneKey}`);
+    });
 
-  updateMessage() {
-    if (!this.rotateImage || !this.fullscreenImage) return;
+    // Initial evaluation
+    this.evaluateDisplayState();
 
-    if (this.isPortrait()) {
-      this.rotateImage.style.display = 'block';
-      this.fullscreenImage.style.display = 'none';
+    // Listen for resize, orientation and fullscreen changes
+    window.addEventListener('resize', () => this.evaluateDisplayState());
+    window.addEventListener('orientationchange', () => this.evaluateDisplayState());
+    document.addEventListener('fullscreenchange', () => this.evaluateDisplayState());
+  },
+
+  evaluateDisplayState() {
+    const isPortrait = window.matchMedia('(orientation: portrait)').matches;
+    const isFullscreen = document.fullscreenElement !== null;
+
+    console.log('[DisplayManager] Evaluating display state...');
+    console.log(` - Portrait: ${isPortrait}`);
+    console.log(` - Fullscreen: ${isFullscreen}`);
+
+    if (isPortrait) {
+      this.showOverlay(this.rotateImage);
+      this.hideOverlay(this.fullscreenImage);
+      this.pauseGame();
+    } else if (!isFullscreen) {
+      this.showOverlay(this.fullscreenImage);
+      this.hideOverlay(this.rotateImage);
+      this.pauseGame();
     } else {
-      this.rotateImage.style.display = 'none';
+      this.hideOverlay(this.rotateImage);
+      this.hideOverlay(this.fullscreenImage);
+      this.resumeGame();
 
-      if (!this.isFullscreen()) {
-        this.fullscreenImage.style.display = 'block';
-      } else if (!this.bootStarted) {
-        this.fullscreenImage.style.display = 'none';
-        this.bootStarted = true;
-        this.onReady();
+      if (this.onReadyCallback) {
+        console.log('[DisplayManager] Display ready callback triggered');
+        this.onReadyCallback();
+        this.onReadyCallback = null; // prevent repeated calls
       }
     }
-  }
+  },
 
-  handleOrientationChange() {
-    if (this.isPortrait() && this.isFullscreen()) {
-      document.exitFullscreen().catch(err => console.warn('Exit fullscreen failed:', err));
+  pauseGame() {
+    if (this.currentSceneKey) {
+      console.log(`[DisplayManager] Pausing scene: ${this.currentSceneKey}`);
+      this.game.scene.pause(this.currentSceneKey);
+    } else {
+      console.warn('[DisplayManager] No active scene to pause');
     }
+  },
 
-    if (this.orientationTimeout) {
-      clearTimeout(this.orientationTimeout);
+  resumeGame() {
+    if (this.currentSceneKey) {
+      console.log(`[DisplayManager] Resuming scene: ${this.currentSceneKey}`);
+      this.game.scene.resume(this.currentSceneKey);
+    } else {
+      console.warn('[DisplayManager] No active scene to resume');
     }
-    this.orientationTimeout = setTimeout(() => this.updateMessage(), 400);
-  }
+  },
 
-  handleFullscreenChange() {
-    this.updateMessage();
+  showOverlay(el) {
+    if (el) {
+      el.style.display = 'block';
+      console.log(`[DisplayManager] Showing overlay: ${el.id}`);
+    }
+  },
+
+  hideOverlay(el) {
+    if (el) {
+      el.style.display = 'none';
+      console.log(`[DisplayManager] Hiding overlay: ${el.id}`);
+    }
   }
-}
+};

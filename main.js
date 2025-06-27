@@ -1,8 +1,8 @@
 import { connectUIListeners, setupJoystick, setupFullscreenToggle } from './dom-ui.js';
 import { Initialization } from './scenes/Initialization.js';
 import { BootScene } from './scenes/BootScene.js';
+import { DisplayManager } from './DisplayManager.js';
 
-// Phaser game configuration
 const config = {
   type: Phaser.AUTO,
   parent: 'game-container',
@@ -15,19 +15,14 @@ const config = {
   scene: [Initialization, BootScene]
 };
 
-
-// Initialize Phaser
 const game = new Phaser.Game(config);
 
-// Once DOM is ready, hook up UI
 window.addEventListener('load', () => {
   connectUIListeners(game);
   setupJoystick(game);
-  setupFullscreenToggle();
+  setupFullscreenToggle(game);
 
+  DisplayManager.initialize(game);
 });
-
-console.log('Phaser version:', Phaser.VERSION);
-
 
 export default game;
