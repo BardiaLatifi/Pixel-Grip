@@ -1,7 +1,8 @@
 import { connectUIListeners, setupJoystick, setupFullscreenToggle } from './dom-ui.js';
+import { DisplayManager } from './DisplayManager.js';
 import { Initialization } from './scenes/Initialization.js';
 import { BootScene } from './scenes/BootScene.js';
-import { DisplayManager } from './DisplayManager.js';
+import { MainMenuScene } from './scenes/MainMenu.js'
 
 const config = {
   type: Phaser.AUTO,
@@ -12,7 +13,7 @@ const config = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
-  scene: [Initialization, BootScene]
+  scene: [Initialization, BootScene, MainMenuScene]
 };
 
 const game = new Phaser.Game(config);

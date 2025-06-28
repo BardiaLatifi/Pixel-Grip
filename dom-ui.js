@@ -20,7 +20,7 @@ export function setupJoystick(game) {
     zone: document.getElementById('joystick-container'),
     mode: 'static',
     position: { left: '50%', top: '50%' },
-    color: 'black',
+    color: '#303030',
     restOpacity: 1,
   });
   joystick.on('move', (evt, data) => {
