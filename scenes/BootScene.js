@@ -4,6 +4,15 @@ export class BootScene extends Phaser.Scene {
     this.optionButtonHeld = false;
   }
 
+  preload() {
+    this.load.spritesheet('background', 'assets/main-menu/background-sheet.png', {
+      frameWidth: 640,
+      frameHeight: 360
+    });
+
+    // Optionally load a click sound or menu move sound here
+  }
+
   create() {
     // === Add Images ===
     const centerX = this.scale.width / 2;

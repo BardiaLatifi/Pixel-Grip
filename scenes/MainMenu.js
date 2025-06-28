@@ -7,15 +7,18 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.spritesheet('background', 'assets/main-menu/background-sheet.png', {
-      frameWidth: 640,
-      frameHeight: 360
-    });
-
-    // Optionally load a click sound or menu move sound here
   }
 
   create() {
+
+    // Fade in from black
+    this.cameras.main.fadeIn(2000, 0, 0, 0);
+
+    this.input.enabled = false;
+    this.cameras.main.once('camerafadeincomplete', () => {
+      this.input.enabled = true;
+    });
+
     // 1. Background animation
     this.anims.create({
       key: 'bg-loop',
