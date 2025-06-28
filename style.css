@@ -1,3 +1,5 @@
+/* GENERAL */
+
 * {
   user-select: none;
   box-sizing: content-box;
@@ -32,6 +34,30 @@ body {
   box-sizing: border-box;
 }
 
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 75px;
+  height: 75px;
+  opacity: 0.8;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.button:hover {
+  opacity: 1;
+}
+
+.button:active {
+  background-color: #202020;
+}
+
+/* LEFT SIDE */
 
 #left-side {
   display: flex;
@@ -58,6 +84,37 @@ body {
   padding: 0.35em 1.1em;
 }
 
+#joystick-container {
+  width: 100px;
+  height: 100px;
+  position: relative;
+}
+
+#direction-btn-container {
+  display: none;
+  /* should be flex in main menu */
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 150px;
+}
+
+#direction-btn-row {
+  display: flex;
+  flex-direction: row;
+  align-self: center;
+  gap: 40px;
+}
+
+.direction-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  border: none;
+}
+
+/* DISPLAY */
+
 #game-container {
   position: relative;
   display: flex;
@@ -70,41 +127,14 @@ body {
   overflow: hidden;
 }
 
+/* RIGHT SIDE */
+
 #right-side {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 20px;
-}
-
-.button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 75px;
-  height: 75px;
-  opacity: 0.8;
-  background: #333;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.button:hover {
-  opacity: 1;
-}
-
-.button:active {
-  background-color: #202020;
-}
-
-#joystick-container {
-  width: 100px;
-  height: 100px;
-  position: relative;
 }
 
 /* Initialization */
