@@ -30,7 +30,7 @@ body {
   max-width: 100vw;
   height: auto;
   padding: 10px;
-  background-color: rgb(20, 20, 20);
+  background-color: rgb(67, 67, 67);
   box-sizing: border-box;
 }
 
@@ -41,7 +41,7 @@ body {
   width: 75px;
   height: 75px;
   opacity: 0.8;
-  background: #030303;
+  background: #060606;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -92,7 +92,6 @@ body {
 
 #direction-btn-container {
   display: none;
-  /* should be flex in main menu */
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
@@ -103,13 +102,13 @@ body {
   display: flex;
   flex-direction: row;
   align-self: center;
-  gap: 40px;
+  gap: 35px;
 }
 
 .direction-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
   border: none;
 }
 
@@ -125,6 +124,10 @@ body {
   width: 100%;
   background-color: #ababab;
   overflow: hidden;
+  border-style: solid;
+  border-color: black;
+  border-width: 8px 10px;
+  border-radius: 5px;
 }
 
 /* RIGHT SIDE */
@@ -160,6 +163,11 @@ body {
   display: none;
   pointer-events: none;
   /* Prevent accidental clicks */
+}
+
+#right-side i {
+  font-size: 1.8rem;
+  color: #c4c4c4;
 }
 
 

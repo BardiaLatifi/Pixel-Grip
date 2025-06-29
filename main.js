@@ -9,10 +9,6 @@ const config = {
   parent: 'game-container',
   width: 640,
   height: 360,
-  scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH
-  },
   scene: [Initialization, BootScene, MainMenuScene]
 };
 
