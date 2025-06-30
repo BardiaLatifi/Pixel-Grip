@@ -1,10 +1,13 @@
 // Helper functions to manage DOM UI
 export function connectUIListeners(game) {
-  document.getElementById('jump-button').addEventListener('touchstart', () => {
+  document.getElementById('button1').addEventListener('touchstart', () => {
     sendInputToScene(game, 'jump');
   });
-  document.getElementById('shoot-button').addEventListener('touchstart', () => {
+  document.getElementById('button2').addEventListener('touchstart', () => {
     sendInputToScene(game, 'shoot');
+  });
+  document.getElementById('button3').addEventListener('touchstart', () => {
+    sendInputToScene(game, 'run');
   });
 }
 

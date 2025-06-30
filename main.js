@@ -4,6 +4,10 @@ import { Initialization } from './scenes/Initialization.js';
 import { BootScene } from './scenes/BootScene.js';
 import { MainMenuScene } from './scenes/MainMenu.js'
 
+// Temp scene for debug
+// const DEBUG_SCENE = 'MainMenuScene';
+const DEBUG_SCENE = null;
+
 const config = {
   type: Phaser.AUTO,
   parent: 'game-container',
@@ -13,6 +17,11 @@ const config = {
 };
 
 const game = new Phaser.Game(config);
+
+// === TEMP SCENE JUMP === //
+if (DEBUG_SCENE) {
+  game.scene.start(DEBUG_SCENE);
+}
 
 window.addEventListener('load', () => {
   connectUIListeners(game);

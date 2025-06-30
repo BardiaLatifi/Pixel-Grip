@@ -7,6 +7,13 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   preload() {
+    // ***** THIS ASSETS LOAD IS FOR DEBUG SCENE AND MUST DELETE AFTER DEBUGGING
+    // this.load.spritesheet('background', 'assets/main-menu/background-sheet.png', {
+    //   frameWidth: 640,
+    //   frameHeight: 360
+    // });
+
+    // Optionally load a click sound or menu move sound here
   }
 
   create() {
@@ -47,6 +54,27 @@ export class MainMenuScene extends Phaser.Scene {
     // 4. Show the directional buttons and hide nipple.js
     document.getElementById('direction-btn-container').style.display = 'flex';
     document.getElementById('joystick-container').style.display = 'none';
+
+    // 5. Customize Right Side UI
+    const button1 = document.getElementById('button1');
+    const button2 = document.getElementById('button2');
+    const button3 = document.getElementById('button3');
+
+    // Set icons
+    button1.innerHTML = '<i class="fa-solid fa-circle"></i>';
+    button2.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+
+    // Set style
+    button1.querySelector('i').style.setProperty('font-size', '1.5rem', 'important');
+    button2.querySelector('i').style.setProperty('font-size', '2rem', 'important');
+
+
+    // Hide third button
+    button3.style.display = 'none';
+
+    // OPTIONAL: Set aria-labels or data-action for clarity or accessibility
+    button1.setAttribute('aria-label', 'Select');
+    button2.setAttribute('aria-label', 'Cancel');
   }
 
   updateMenuHighlight() {
