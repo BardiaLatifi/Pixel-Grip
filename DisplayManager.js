@@ -19,7 +19,7 @@ export const DisplayManager = {
     // Track active scene key on transitions
     game.events.on('transitionstart', (fromScene, toScene) => {
       this.currentSceneKey = toScene.scene.key;
-      console.log(`[DisplayManager] Transitioned to scene: ${this.currentSceneKey}`);
+      console.log(`[DisplayManager] Scene → ${this.currentSceneKey}`);
     });
 
     // Initial evaluation
@@ -31,34 +31,40 @@ export const DisplayManager = {
     document.addEventListener('fullscreenchange', () => this.evaluateDisplayState());
   },
 
+  // toggle overlay and evaluate display logics for pause, resume, rotation and fullscreen.
+
+  toggleOverlay(el, show) {
+    if (!el) return;
+    el.style.display = show ? 'block' : 'none';
+  },
+
   evaluateDisplayState() {
     const isPortrait = window.matchMedia('(orientation: portrait)').matches;
     const isFullscreen = document.fullscreenElement !== null;
+    const rotateVisible = isPortrait;
+    const fullscreenVisible = !isPortrait && !isFullscreen;
+    const shouldPause = rotateVisible || fullscreenVisible;
 
-    console.log('[DisplayManager] Evaluating display state...');
-    console.log(` - Portrait: ${isPortrait}`);
-    console.log(` - Fullscreen: ${isFullscreen}`);
+    // Show/hide overlays
+    this.toggleOverlay(this.rotateImage, rotateVisible);
+    this.toggleOverlay(this.fullscreenImage, fullscreenVisible);
 
-    if (isPortrait) {
-      this.showOverlay(this.rotateImage);
-      this.hideOverlay(this.fullscreenImage);
-      this.pauseGame();
-    } else if (!isFullscreen) {
-      this.showOverlay(this.fullscreenImage);
-      this.hideOverlay(this.rotateImage);
+    // Pause or resume game
+    if (shouldPause) {
       this.pauseGame();
     } else {
-      this.hideOverlay(this.rotateImage);
-      this.hideOverlay(this.fullscreenImage);
       this.resumeGame();
-
       if (this.onReadyCallback) {
         console.log('[DisplayManager] Display ready callback triggered');
         this.onReadyCallback();
-        this.onReadyCallback = null; // prevent repeated calls
+        this.onReadyCallback = null;
       }
     }
+
+    // One-line summary
+    console.log(`[DisplayManager] State → portrait=${isPortrait}, fullscreen=${isFullscreen}, rotate=${rotateVisible ? 'shown' : 'hidden'}, fullscreen-msg=${fullscreenVisible ? 'shown' : 'hidden'}, paused=${shouldPause}`);
   },
+
 
   pauseGame() {
     if (this.currentSceneKey) {

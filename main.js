@@ -5,8 +5,8 @@ import { BootScene } from './scenes/BootScene.js';
 import { MainMenuScene } from './scenes/MainMenu.js'
 
 // Temp scene for debug
-// const DEBUG_SCENE = 'MainMenuScene';
-const DEBUG_SCENE = null;
+const DEBUG_SCENE = 'MainMenuScene';
+// const DEBUG_SCENE = null;
 
 const config = {
   type: Phaser.AUTO,

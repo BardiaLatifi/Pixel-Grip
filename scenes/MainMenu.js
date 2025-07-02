@@ -8,10 +8,10 @@ export class MainMenuScene extends Phaser.Scene {
 
   preload() {
     // ***** THIS ASSETS LOAD IS FOR DEBUG SCENE AND MUST DELETE AFTER DEBUGGING
-    // this.load.spritesheet('background', 'assets/main-menu/background-sheet.png', {
-    //   frameWidth: 640,
-    //   frameHeight: 360
-    // });
+    this.load.spritesheet('background', 'assets/main-menu/background-sheet.png', {
+      frameWidth: 640,
+      frameHeight: 360
+    });
 
     // Optionally load a click sound or menu move sound here
   }
@@ -33,9 +33,6 @@ export class MainMenuScene extends Phaser.Scene {
       frameRate: 5,
       repeat: -1
     });
-
-    console.log('[MainMenuScene] Total frames in background:', this.textures.get('background').frameTotal);
-
 
     this.bg = this.add.sprite(320, 180, 'background').play('bg-loop');
 
@@ -61,7 +58,7 @@ export class MainMenuScene extends Phaser.Scene {
     const button3 = document.getElementById('button3');
 
     // Set icons
-    button1.innerHTML = '<i class="fa-solid fa-circle"></i>';
+    button1.innerHTML = '<i class="fa-regular fa-circle"></i>';
     button2.innerHTML = '<i class="fa-solid fa-xmark"></i>';
 
     // Set style
