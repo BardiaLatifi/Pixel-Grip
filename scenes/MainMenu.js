@@ -2,9 +2,12 @@
 export class MainMenuScene extends Phaser.Scene {
   constructor() {
     super('MainMenuScene');
-    this.menuItems = ['Start Game', 'Options', 'Credits'];
+    this.mainMenuItems = ['Games', 'Options', 'About'];
+    this.optionsMenuItems = ['Controller', 'Audio', 'Themes'];
+    this.menuItems = this.mainMenuItems;
     this.currentIndex = 0;
   }
+
 
   preload() {
     // ***** THIS ASSETS LOAD IS FOR DEBUG SCENE AND MUST DELETE AFTER DEBUGGING
@@ -17,11 +20,15 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   create() {
+    this.inSubMenu = false;
 
     // Fade in from black
     this.cameras.main.fadeIn(2000, 0, 0, 0);
-
     this.input.enabled = false;
+
+    this.renderMenuItems();       // Draw initial menu
+    this.setupInputHandlers();    // Set up input logic
+
     this.cameras.main.once('camerafadeincomplete', () => {
       this.input.enabled = true;
     });
@@ -38,7 +45,7 @@ export class MainMenuScene extends Phaser.Scene {
 
     // 2. Menu text items
     this.menuTexts = this.menuItems.map((label, index) => {
-      return this.add.text(320, 180 + index * 40, label, {
+      return this.add.text(150, 220 + index * 40, label, {
         fontFamily: 'sans-serif',
         fontSize: '24px',
         color: index === this.currentIndex ? '#fff' : '#999'
@@ -68,11 +75,76 @@ export class MainMenuScene extends Phaser.Scene {
 
     // Hide third button
     button3.style.display = 'none';
-
-    // OPTIONAL: Set aria-labels or data-action for clarity or accessibility
-    button1.setAttribute('aria-label', 'Select');
-    button2.setAttribute('aria-label', 'Cancel');
   }
+
+  setupInputHandlers() {
+    // Direction buttons
+    document.getElementById('btn-down').addEventListener('click', () => {
+      this.currentIndex = (this.currentIndex - 1 + this.menuItems.length) % this.menuItems.length;
+      this.updateMenuHighlight();
+    });
+
+    document.getElementById('btn-up').addEventListener('click', () => {
+      this.currentIndex = (this.currentIndex + 1) % this.menuItems.length;
+      this.updateMenuHighlight();
+    });
+
+    // Select with button1
+    document.getElementById('button1').addEventListener('click', () => {
+      const selected = this.menuItems[this.currentIndex];
+      console.log(`[MainMenu] Selected: ${selected}`);
+
+      if (!this.inSubMenu) {
+        if (selected === 'Games') {
+          this.scene.start('YourGameScene'); // Replace with your actual game scene key
+        } else if (selected === 'Options') {
+          this.enterSubMenu(this.optionsMenuItems);
+        }
+      } else {
+        console.log(`[SubMenu] Selected item: ${selected}`);
+        // Handle submenu actions here (e.g., set volume, etc.)
+      }
+    });
+
+    // Back with button2
+    document.getElementById('button2').addEventListener('click', () => {
+      if (this.inSubMenu) {
+        this.exitSubMenu();
+      }
+    });
+  }
+
+  clearMenuTexts() {
+    this.menuTexts.forEach(text => text.destroy());
+    this.menuTexts = [];
+  }
+
+  renderMenuItems() {
+    this.menuTexts = this.menuItems.map((label, index) => {
+      return this.add.text(150, 220 + index * 40, label, {
+        fontFamily: 'sans-serif',
+        fontSize: '24px',
+        color: index === this.currentIndex ? '#fff' : '#999'
+      }).setOrigin(0.5);
+    });
+  }
+
+  enterSubMenu(items) {
+    this.inSubMenu = true;
+    this.menuItems = items;
+    this.currentIndex = 0;
+    this.clearMenuTexts();
+    this.renderMenuItems();
+  }
+
+  exitSubMenu() {
+    this.inSubMenu = false;
+    this.menuItems = this.mainMenuItems;
+    this.currentIndex = 0;
+    this.clearMenuTexts();
+    this.renderMenuItems();
+  }
+
 
   updateMenuHighlight() {
     this.menuTexts.forEach((text, i) => {
@@ -80,26 +152,7 @@ export class MainMenuScene extends Phaser.Scene {
     });
   }
 
-  setupInputHandlers() {
-    // HTML buttons
-    document.getElementById('btn-up').addEventListener('click', () => {
-      this.currentIndex = (this.currentIndex - 1 + this.menuItems.length) % this.menuItems.length;
-      this.updateMenuHighlight();
-    });
 
-    document.getElementById('btn-down').addEventListener('click', () => {
-      this.currentIndex = (this.currentIndex + 1) % this.menuItems.length;
-      this.updateMenuHighlight();
-    });
-
-    document.getElementById('option-btn').addEventListener('click', () => {
-      const selected = this.menuItems[this.currentIndex];
-      console.log(`Selected: ${selected}`);
-      if (selected === 'Start Game') {
-        this.scene.start('YourGameScene'); // Replace with actual game scene
-      }
-    });
-  }
 
   shutdown() {
     // Hide direction buttons & re-enable joystick

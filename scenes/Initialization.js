@@ -13,10 +13,14 @@ export class Initialization extends Phaser.Scene {
   }
 
   create() {
-    // Initialize DisplayManager with a callback to start BootScene
+    // Register this scene as current for DisplayManager
+    DisplayManager.currentSceneKey = this.scene.key;
+
+    // Initialize display state with callback
     DisplayManager.initialize(this.game, () => {
-      console.log('[Initialization] Display ready, starting BootScene');
-      this.scene.start('BootScene');
+      const targetScene = window.DEBUG_SCENE || 'BootScene';
+      console.log(`[Initialization] Display ready, starting ${targetScene}`);
+      this.scene.start(targetScene);
     });
   }
 }

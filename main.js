@@ -1,27 +1,29 @@
 import { connectUIListeners, setupJoystick, setupFullscreenToggle } from './dom-ui.js';
 import { DisplayManager } from './DisplayManager.js';
+
 import { Initialization } from './scenes/Initialization.js';
 import { BootScene } from './scenes/BootScene.js';
 import { MainMenuScene } from './scenes/MainMenu.js'
 
-// Temp scene for debug
-const DEBUG_SCENE = 'MainMenuScene';
-// const DEBUG_SCENE = null;
+// === Debugging Control ===
+const DEBUG_SCENE = 'MainMenuScene'; // Set to null to use full flow (BootScene etc.)
+window.DEBUG_SCENE = DEBUG_SCENE;    // Expose for scene logic if needed
+
+// === Dynamic Scene List ===
+const SCENES = DEBUG_SCENE
+  ? [Initialization, MainMenuScene] // Skip BootScene during debug
+  : [Initialization, BootScene, MainMenuScene];
+
 
 const config = {
   type: Phaser.AUTO,
   parent: 'game-container',
   width: 640,
   height: 360,
-  scene: [Initialization, BootScene, MainMenuScene]
+  scene: SCENES
 };
 
 const game = new Phaser.Game(config);
-
-// === TEMP SCENE JUMP === //
-if (DEBUG_SCENE) {
-  game.scene.start(DEBUG_SCENE);
-}
 
 window.addEventListener('load', () => {
   connectUIListeners(game);
