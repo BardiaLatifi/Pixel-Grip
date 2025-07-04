@@ -2,9 +2,13 @@
 export class MainMenuScene extends Phaser.Scene {
   constructor() {
     super('MainMenuScene');
-    this.mainMenuItems = ['Games', 'Options', 'About'];
-    this.optionsMenuItems = ['Controller', 'Audio', 'Themes'];
-    this.menuItems = this.mainMenuItems;
+    this.menuTree = {
+      root: ['Play', 'Options', 'About'],
+      Options: ['Audio', 'Controls', 'Themes'],
+      About: ['Project Info', 'Credits']
+    };
+    this.currentMenu = 'root';     // current menu level
+    this.menuItems = this.menuTree[this.currentMenu]; // displayed items
     this.currentIndex = 0;
   }
 
@@ -27,7 +31,6 @@ export class MainMenuScene extends Phaser.Scene {
     this.input.enabled = false;
 
     this.renderMenuItems();       // Draw initial menu
-    this.setupInputHandlers();    // Set up input logic
 
     this.cameras.main.once('camerafadeincomplete', () => {
       this.input.enabled = true;
@@ -45,11 +48,16 @@ export class MainMenuScene extends Phaser.Scene {
 
     // 2. Menu text items
     this.menuTexts = this.menuItems.map((label, index) => {
-      return this.add.text(150, 220 + index * 40, label, {
+      const isSelected = index === this.currentIndex;
+      const text = this.add.text(320, 180 + index * 40, label, {
         fontFamily: 'sans-serif',
         fontSize: '24px',
-        color: index === this.currentIndex ? '#fff' : '#999'
+        color: isSelected ? '#fff' : '#999'
       }).setOrigin(0.5);
+
+      text.setAlpha(isSelected ? 1 : 0.7); // ✅ full opacity for selected, 0.5 for others
+      text.setScale(isSelected ? 1 : 0.75)
+      return text;
     });
 
     // 3. Setup direction buttons
@@ -75,16 +83,19 @@ export class MainMenuScene extends Phaser.Scene {
 
     // Hide third button
     button3.style.display = 'none';
+
+    console.log('[Menu Changed] Current menu:', this.currentMenu, 'Items:', this.menuItems);
+
   }
 
   setupInputHandlers() {
     // Direction buttons
-    document.getElementById('btn-down').addEventListener('click', () => {
+    document.getElementById('btn-up').addEventListener('click', () => {
       this.currentIndex = (this.currentIndex - 1 + this.menuItems.length) % this.menuItems.length;
       this.updateMenuHighlight();
     });
 
-    document.getElementById('btn-up').addEventListener('click', () => {
+    document.getElementById('btn-down').addEventListener('click', () => {
       this.currentIndex = (this.currentIndex + 1) % this.menuItems.length;
       this.updateMenuHighlight();
     });
@@ -92,23 +103,12 @@ export class MainMenuScene extends Phaser.Scene {
     // Select with button1
     document.getElementById('button1').addEventListener('click', () => {
       const selected = this.menuItems[this.currentIndex];
-      console.log(`[MainMenu] Selected: ${selected}`);
-
-      if (!this.inSubMenu) {
-        if (selected === 'Games') {
-          this.scene.start('YourGameScene'); // Replace with your actual game scene key
-        } else if (selected === 'Options') {
-          this.enterSubMenu(this.optionsMenuItems);
-        }
-      } else {
-        console.log(`[SubMenu] Selected item: ${selected}`);
-        // Handle submenu actions here (e.g., set volume, etc.)
-      }
+      this.enterSubMenu(selected);
     });
 
     // Back with button2
     document.getElementById('button2').addEventListener('click', () => {
-      if (this.inSubMenu) {
+      if (this.currentMenu !== 'root') {
         this.exitSubMenu();
       }
     });
@@ -121,38 +121,55 @@ export class MainMenuScene extends Phaser.Scene {
 
   renderMenuItems() {
     this.menuTexts = this.menuItems.map((label, index) => {
-      return this.add.text(150, 220 + index * 40, label, {
+      const isSelected = index === this.currentIndex;
+      const text = this.add.text(320, 180 + index * 40, label, {
         fontFamily: 'sans-serif',
         fontSize: '24px',
-        color: index === this.currentIndex ? '#fff' : '#999'
+        color: isSelected ? '#fff' : '#999',
       }).setOrigin(0.5);
+
+      text.setScale(isSelected ? 1 : 0.75);
+      text.setAlpha(isSelected ? 1 : 0.75);
+
+      return text;
     });
   }
 
-  enterSubMenu(items) {
-    this.inSubMenu = true;
-    this.menuItems = items;
+  enterSubMenu(label) {
+    this.currentMenu = label;
+    this.menuItems = this.menuTree[label];
+    console.log('[Menu Changed] Current menu:', this.currentMenu, 'Items:', this.menuItems);
     this.currentIndex = 0;
     this.clearMenuTexts();
     this.renderMenuItems();
+    this.updateMenuHighlight();
   }
 
   exitSubMenu() {
-    this.inSubMenu = false;
-    this.menuItems = this.mainMenuItems;
+    this.currentMenu = 'root';
+    this.menuItems = this.menuTree[this.currentMenu];
+    console.log('[Menu Changed] Current menu:', this.currentMenu, 'Items:', this.menuItems);
     this.currentIndex = 0;
     this.clearMenuTexts();
     this.renderMenuItems();
+    this.updateMenuHighlight();
   }
-
 
   updateMenuHighlight() {
     this.menuTexts.forEach((text, i) => {
-      text.setColor(i === this.currentIndex ? '#fff' : '#999');
+      const isSelected = i === this.currentIndex;
+
+      text.setColor(isSelected ? '#fff' : '#999');
+
+      this.tweens.add({
+        targets: text,
+        scale: isSelected ? 1 : 0.75,
+        alpha: isSelected ? 1 : 0.75,
+        duration: 200,
+        ease: 'Quad.easeOut',
+      });
     });
   }
-
-
 
   shutdown() {
     // Hide direction buttons & re-enable joystick
