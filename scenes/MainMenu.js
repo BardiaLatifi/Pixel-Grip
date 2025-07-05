@@ -56,7 +56,7 @@ export class MainMenuScene extends Phaser.Scene {
       }).setOrigin(0.5);
 
       text.setAlpha(isSelected ? 1 : 0.7); // ✅ full opacity for selected, 0.5 for others
-      text.setScale(isSelected ? 1 : 0.75)
+      text.setScale(isSelected ? 1 : 0.85)
       return text;
     });
 
@@ -89,30 +89,77 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   setupInputHandlers() {
-    // Direction buttons
-    document.getElementById('btn-up').addEventListener('click', () => {
-      this.currentIndex = (this.currentIndex - 1 + this.menuItems.length) % this.menuItems.length;
-      this.updateMenuHighlight();
+    const btnUp = document.getElementById('btn-up');
+    const btnDown = document.getElementById('btn-down');
+    const button1 = document.getElementById('button1');
+    const button2 = document.getElementById('button2');
+
+    // --- Holding logic for UP/DOWN buttons ---
+    let holdTimer = null;
+    let repeatInterval = null;
+
+    const startHold = (directionFn) => {
+      directionFn(); // trigger immediately
+      holdTimer = setTimeout(() => {
+        repeatInterval = setInterval(directionFn, 220);
+      }, 400); // start repeating after 400ms
+    };
+
+    const stopHold = () => {
+      clearTimeout(holdTimer);
+      clearInterval(repeatInterval);
+    };
+
+    btnUp.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      startHold(() => {
+        this.currentIndex = (this.currentIndex - 1 + this.menuItems.length) % this.menuItems.length;
+        this.updateMenuHighlight();
+      });
+    }, { passive: false });
+
+    btnDown.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      startHold(() => {
+        this.currentIndex = (this.currentIndex + 1) % this.menuItems.length;
+        this.updateMenuHighlight();
+      });
+    }, { passive: false });
+
+    ['touchend', 'touchcancel'].forEach(event => {
+      btnUp.addEventListener(event, stopHold);
+      btnDown.addEventListener(event, stopHold);
     });
 
-    document.getElementById('btn-down').addEventListener('click', () => {
-      this.currentIndex = (this.currentIndex + 1) % this.menuItems.length;
-      this.updateMenuHighlight();
-    });
+    // --- Tap logic with visual feedback for button1 ---
+    const setupButtonWithActiveFeedback = (buttonEl, callback) => {
+      buttonEl.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        buttonEl.classList.add('active');
+        callback();
+      }, { passive: false });
 
-    // Select with button1
-    document.getElementById('button1').addEventListener('click', () => {
+      ['touchend', 'touchcancel'].forEach(event => {
+        buttonEl.addEventListener(event, () => {
+          buttonEl.classList.remove('active');
+        });
+      });
+    };
+
+    // ✅ Select (button1)
+    setupButtonWithActiveFeedback(button1, () => {
       const selected = this.menuItems[this.currentIndex];
       this.enterSubMenu(selected);
     });
 
-    // Back with button2
-    document.getElementById('button2').addEventListener('click', () => {
+    // ✅ Back (button2)
+    setupButtonWithActiveFeedback(button2, () => {
       if (this.currentMenu !== 'root') {
         this.exitSubMenu();
       }
     });
   }
+
 
   clearMenuTexts() {
     this.menuTexts.forEach(text => text.destroy());
@@ -128,7 +175,7 @@ export class MainMenuScene extends Phaser.Scene {
         color: isSelected ? '#fff' : '#999',
       }).setOrigin(0.5);
 
-      text.setScale(isSelected ? 1 : 0.75);
+      text.setScale(isSelected ? 1 : 0.85);
       text.setAlpha(isSelected ? 1 : 0.75);
 
       return text;
@@ -163,7 +210,7 @@ export class MainMenuScene extends Phaser.Scene {
 
       this.tweens.add({
         targets: text,
-        scale: isSelected ? 1 : 0.75,
+        scale: isSelected ? 1 : 0.85,
         alpha: isSelected ? 1 : 0.75,
         duration: 200,
         ease: 'Quad.easeOut',
