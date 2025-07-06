@@ -20,6 +20,19 @@ export class MainMenuScene extends Phaser.Scene {
       frameHeight: 360
     });
 
+    this.load.spritesheet('options-enter', 'assets/main-menu/options-enter.png', {
+      frameWidth: 640,
+      frameHeight: 360
+    });
+    this.load.spritesheet('options-loop', 'assets/main-menu/options-loop.png', {
+      frameWidth: 640,
+      frameHeight: 360
+    });
+    this.load.spritesheet('options-exit', 'assets/main-menu/options-exit.png', {
+      frameWidth: 640,
+      frameHeight: 360
+    });
+
     // Optionally load a click sound or menu move sound here
   }
 
@@ -36,7 +49,9 @@ export class MainMenuScene extends Phaser.Scene {
       this.input.enabled = true;
     });
 
-    // 1. Background animation
+    // 1. Animations
+
+    // Root Background
     this.anims.create({
       key: 'bg-loop',
       frames: this.anims.generateFrameNumbers('background', { start: 0, end: 24 }),
@@ -44,30 +59,40 @@ export class MainMenuScene extends Phaser.Scene {
       repeat: -1
     });
 
-    this.bg = this.add.sprite(320, 180, 'background').play('bg-loop');
-
-    // 2. Menu text items
-    this.menuTexts = this.menuItems.map((label, index) => {
-      const isSelected = index === this.currentIndex;
-      const text = this.add.text(320, 180 + index * 40, label, {
-        fontFamily: 'sans-serif',
-        fontSize: '24px',
-        color: isSelected ? '#fff' : '#999'
-      }).setOrigin(0.5);
-
-      text.setAlpha(isSelected ? 1 : 0.7); // ✅ full opacity for selected, 0.5 for others
-      text.setScale(isSelected ? 1 : 0.85)
-      return text;
+    // Options Entering
+    this.anims.create({
+      key: 'options-enter',
+      frames: this.anims.generateFrameNumbers('options-enter', { start: 0, end: 10 }),
+      frameRate: 22,
+      repeat: 0
     });
 
-    // 3. Setup direction buttons
+    // Options Background
+    this.anims.create({
+      key: 'options-loop',
+      frames: this.anims.generateFrameNumbers('options-loop', { start: 0, end: 10 }),
+      frameRate: 18,
+      repeat: -1
+    });
+
+    // Options Exit
+    this.anims.create({
+      key: 'options-exit',
+      frames: this.anims.generateFrameNumbers('options-exit', { start: 0, end: 9 }),
+      frameRate: 28,
+      repeat: 0
+    });
+
+    this.bg = this.add.sprite(320, 180, 'background').play('bg-loop');
+
+    // 2. Setup direction buttons
     this.setupInputHandlers();
 
-    // 4. Show the directional buttons and hide nipple.js
+    // 3. Show the directional buttons and hide nipple.js
     document.getElementById('direction-btn-container').style.display = 'flex';
     document.getElementById('joystick-container').style.display = 'none';
 
-    // 5. Customize Right Side UI
+    // 4. Customize Right Side UI
     const button1 = document.getElementById('button1');
     const button2 = document.getElementById('button2');
     const button3 = document.getElementById('button3');
@@ -146,13 +171,13 @@ export class MainMenuScene extends Phaser.Scene {
       });
     };
 
-    // ✅ Select (button1)
+    // Select (button1)
     setupButtonWithActiveFeedback(button1, () => {
       const selected = this.menuItems[this.currentIndex];
       this.enterSubMenu(selected);
     });
 
-    // ✅ Back (button2)
+    // Back (button2)
     setupButtonWithActiveFeedback(button2, () => {
       if (this.currentMenu !== 'root') {
         this.exitSubMenu();
@@ -166,6 +191,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.menuTexts = [];
   }
 
+
   renderMenuItems() {
     this.menuTexts = this.menuItems.map((label, index) => {
       const isSelected = index === this.currentIndex;
@@ -177,30 +203,71 @@ export class MainMenuScene extends Phaser.Scene {
 
       text.setScale(isSelected ? 1 : 0.85);
       text.setAlpha(isSelected ? 1 : 0.75);
+      text.setDepth(1); // ✅ Put on top of background!
 
       return text;
     });
   }
 
+
+  playBackground(key, onComplete) {
+    if (this.bg) {
+      this.bg.stop();      // ✅ Stop any previous animation
+      this.bg.destroy();   // ✅ Destroy old bg safely
+    }
+
+    this.bg = this.add.sprite(320, 180, key).setDepth(0).play(key);
+
+    if (onComplete) {
+      this.bg.once('animationcomplete', onComplete);
+    }
+  }
+
+
   enterSubMenu(label) {
-    this.currentMenu = label;
-    this.menuItems = this.menuTree[label];
-    console.log('[Menu Changed] Current menu:', this.currentMenu, 'Items:', this.menuItems);
+    if (this.menuTree[label]) {
+      this.clearMenuTexts(); // ✅ Clear old menu texts first
+
+      this.currentMenu = label;
+      this.menuItems = this.menuTree[label];
+      this.currentIndex = 0;
+
+      if (label === 'Options') {
+        // 🛠 Delay menu render until animation finishes
+        this.playBackground('options-enter', () => {
+          this.playBackground('options-loop');
+          this.renderMenuItems();      // ✅ Now it's safe to render
+          this.updateMenuHighlight();
+        });
+      } else {
+        this.renderMenuItems();
+        this.updateMenuHighlight();
+      }
+    } else {
+      if (label === 'Play') this.scene.start('YourGameScene');
+    }
+  }
+
+
+
+  exitSubMenu() {
+    if (this.currentMenu === 'Options') {
+      this.playBackground('options-exit', () => {
+        this.playBackground('bg-loop'); // Default background
+      });
+    } else {
+      this.playBackground('bg-loop');
+    }
+
+    this.currentMenu = 'root';
+    this.menuItems = this.menuTree[this.currentMenu];
     this.currentIndex = 0;
     this.clearMenuTexts();
     this.renderMenuItems();
     this.updateMenuHighlight();
   }
 
-  exitSubMenu() {
-    this.currentMenu = 'root';
-    this.menuItems = this.menuTree[this.currentMenu];
-    console.log('[Menu Changed] Current menu:', this.currentMenu, 'Items:', this.menuItems);
-    this.currentIndex = 0;
-    this.clearMenuTexts();
-    this.renderMenuItems();
-    this.updateMenuHighlight();
-  }
+
 
   updateMenuHighlight() {
     this.menuTexts.forEach((text, i) => {
