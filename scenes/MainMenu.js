@@ -15,9 +15,11 @@ export class MainMenuScene extends Phaser.Scene {
 
   preload() {
     // ***** THIS ASSETS LOAD IS FOR DEBUG SCENE AND MUST DELETE AFTER DEBUGGING
-    this.load.spritesheet('background', 'assets/main-menu/background-sheet.png', {
-      frameWidth: 640,
-      frameHeight: 360
+    this.load.image('background', 'assets/main-menu/bg-root.png');
+
+    this.load.spritesheet('fire', 'assets/main-menu/fire.png', {
+      frameWidth: 120,
+      frameHeight: 80
     });
 
     this.load.spritesheet('options-enter', 'assets/main-menu/options-enter.png', {
@@ -51,14 +53,14 @@ export class MainMenuScene extends Phaser.Scene {
 
     // 1. Animations
 
-    // Root Background
-    this.anims.create({
-      key: 'bg-loop',
-      frames: this.anims.generateFrameNumbers('background', { start: 0, end: 24 }),
-      frameRate: 5,
-      repeat: -1
+    // Static Backgrounds and moving parts
+    this.createBackground('background');
+    this.createMovingPart('fire', 206, 168, {
+      frameRate: 10,
+      start: 0,
+      end: 23,
+      loop: true
     });
-
     // Options Entering
     this.anims.create({
       key: 'options-enter',
@@ -82,8 +84,6 @@ export class MainMenuScene extends Phaser.Scene {
       frameRate: 28,
       repeat: 0
     });
-
-    this.bg = this.add.sprite(320, 180, 'background').play('bg-loop');
 
     // 2. Setup direction buttons
     this.setupInputHandlers();
@@ -209,65 +209,141 @@ export class MainMenuScene extends Phaser.Scene {
     });
   }
 
-
-  playBackground(key, onComplete) {
+  // Creating the Environments of the Menus
+  createBackground(key, onComplete = null) {
     if (this.bg) {
-      this.bg.stop();      // ✅ Stop any previous animation
-      this.bg.destroy();   // ✅ Destroy old bg safely
+      this.bg.stop?.();      // stop if it's an animation
+      this.bg.destroy();     // clean up previous bg
     }
 
-    this.bg = this.add.sprite(320, 180, key).setDepth(0).play(key);
+    // If an animation exists, it's a sprite animation
+    if (this.anims.exists(key)) {
+      this.bg = this.add.sprite(320, 180, key).setDepth(0).play(key);
 
-    if (onComplete) {
-      this.bg.once('animationcomplete', onComplete);
+      if (onComplete) {
+        this.bg.once('animationcomplete', onComplete);
+      }
+    } else {
+      // Static background image
+      this.bg = this.add.image(0, 0, key).setOrigin(0).setDepth(0);
+      if (onComplete) onComplete(); // trigger callback immediately for consistency
     }
   }
 
+  createMovingPart(key, x, y, config = {}) {
+    if (this.movingPart) {
+      this.movingPart.destroy();
+      this.movingPart = null;
+    }
+    if (this.movingPart) {
+      this.movingPart.destroy();
+    }
 
+    if (!key) return; // Prevent error when key is null
+
+    const {
+      start = 0,
+      end = null,
+      frameRate = 10,
+      loop = true,
+      originX = 0.5,
+      originY = 0.5
+    } = config;
+
+    const animKey = `${key}-loop`;
+
+    // Only create animation if it doesn't already exist
+    if (!this.anims.exists(animKey)) {
+      this.anims.create({
+        key: animKey,
+        frames: this.anims.generateFrameNumbers(key, {
+          start,
+          end: end !== null ? end : this.textures.get(key).frameTotal - 1
+        }),
+        frameRate,
+        repeat: loop ? -1 : 0
+      });
+    }
+
+    this.movingPart = this.add.sprite(x, y, key)
+      .setOrigin(originX, originY)
+      .setDepth(1)
+      .play(animKey);
+  }
+
+  // the logics of Toggle Submenus
   enterSubMenu(label) {
     if (this.menuTree[label]) {
-      this.clearMenuTexts(); // ✅ Clear old menu texts first
+      this.clearMenuTexts();
 
       this.currentMenu = label;
       this.menuItems = this.menuTree[label];
       this.currentIndex = 0;
 
       if (label === 'Options') {
-        // 🛠 Delay menu render until animation finishes
-        this.playBackground('options-enter', () => {
-          this.playBackground('options-loop');
-          this.renderMenuItems();      // ✅ Now it's safe to render
+        // the root moving part destroys when user enters to options submenu
+        this.createMovingPart(null);
+        // Play animated transition → then loop background and show menu
+        this.createBackground('options-enter', () => {
+          this.createBackground('options-loop');
+          this.renderMenuItems();
           this.updateMenuHighlight();
         });
       } else {
+        // Static submenu (e.g., About)
+        this.createBackground('background'); // fallback bg
+        this.createMovingPart('fire', 206, 168, {
+          start: 0,
+          end: 23,
+          frameRate: 10,
+          loop: true
+        });
         this.renderMenuItems();
         this.updateMenuHighlight();
       }
     } else {
-      if (label === 'Play') this.scene.start('YourGameScene');
+      // Handle top-level actions
+      if (label === 'Play') {
+        this.scene.start('YourGameScene');
+      }
     }
   }
 
-
-
   exitSubMenu() {
+    this.clearMenuTexts();
+
     if (this.currentMenu === 'Options') {
-      this.playBackground('options-exit', () => {
-        this.playBackground('bg-loop'); // Default background
+      // Play exit animation, then restore static root bg + fire
+      this.createBackground('options-exit', () => {
+        this.createBackground('background');
+        this.createMovingPart('fire', 206, 168, {
+          start: 0,
+          end: 23,
+          frameRate: 10,
+          loop: true
+        });
+        this.showRootMenu();
       });
     } else {
-      this.playBackground('bg-loop');
+      // No animation needed, just go back
+      this.createBackground('background');
+      this.createMovingPart('fire', 206, 168, {
+        start: 0,
+        end: 23,
+        frameRate: 10,
+        loop: true
+      });
+      this.showRootMenu();
     }
+  }
 
+  showRootMenu() {
     this.currentMenu = 'root';
     this.menuItems = this.menuTree[this.currentMenu];
     this.currentIndex = 0;
-    this.clearMenuTexts();
     this.renderMenuItems();
     this.updateMenuHighlight();
   }
-
-
 
   updateMenuHighlight() {
     this.menuTexts.forEach((text, i) => {
