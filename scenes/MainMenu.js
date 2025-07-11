@@ -5,7 +5,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.menuTree = {
       root: ['Play', 'Options', 'About'],
       Options: ['Audio', 'Controls', 'Themes'],
-      About: ['Project Info', 'Credits']
+      About: ['Project Info', 'Grip Guide']
     };
     this.currentMenu = 'root';     // current menu level
     this.menuItems = this.menuTree[this.currentMenu]; // displayed items

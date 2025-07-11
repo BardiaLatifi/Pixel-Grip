@@ -25,7 +25,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
   width: 100vw;
   max-width: 100vw;
   height: auto;
@@ -38,8 +38,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 75px;
-  height: 75px;
+  width: 70px;
+  height: 70px;
   opacity: 0.8;
   background: #060606;
   color: #fff;
@@ -74,22 +74,25 @@ body {
   justify-content: center;
 }
 
-.left-side-buttons {
+.option-buttons {
   background-color: #030303;
   opacity: 0.8;
   border: none;
   border-radius: 2px;
 }
 
-#full-screen-btn {
-  margin-top: 5em;
+#full-screen-btn,
+#home-btn {
+  position: absolute;
+  top: 340px;
   padding: 0.8em;
-
 }
 
-#option-btn {
-  margin-bottom: 5em;
-  padding: 0.35em 1.1em;
+#left-option-btn,
+#right-option-btn {
+  position: absolute;
+  top: 45px;
+  padding: 0.3em 1em;
 }
 
 #joystick-container {
@@ -114,13 +117,22 @@ body {
 }
 
 .direction-btn {
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   border: none;
 }
 
 /* DISPLAY */
+
+#frame-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 6px solid black;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
 
 #game-container {
   position: relative;
@@ -128,14 +140,9 @@ body {
   align-items: center;
   justify-content: center;
   aspect-ratio: 16 / 9;
-  max-width: 640px;
   width: 100%;
   background-color: #ababab;
   overflow: hidden;
-  border-style: solid;
-  border-color: black;
-  border-width: 8px 10px;
-  border-radius: 5px;
 }
 
 /* RIGHT SIDE */
@@ -145,7 +152,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 8px;
 }
 
 /* Initialization */

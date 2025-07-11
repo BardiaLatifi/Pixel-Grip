@@ -105,7 +105,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   enableOptionButton() {
-    const btn = document.getElementById('option-btn');
+    const btn = document.getElementById('left-option-btn');
     if (!btn) return;
 
     const handleHold = () => {
