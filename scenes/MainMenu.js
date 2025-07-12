@@ -15,13 +15,16 @@ export class MainMenuScene extends Phaser.Scene {
 
   preload() {
     // ***** THIS ASSETS LOAD IS FOR DEBUG SCENE AND MUST DELETE AFTER DEBUGGING
-    this.load.image('background', 'assets/main-menu/bg-root.png');
 
-    this.load.spritesheet('fire', 'assets/main-menu/fire.png', {
+    // Root Assets
+    this.load.image('background-root', 'assets/main-menu/bg-root.png');
+
+    this.load.spritesheet('fire-root', 'assets/main-menu/fire-root.png', {
       frameWidth: 120,
       frameHeight: 80
     });
 
+    // Options Assets
     this.load.spritesheet('options-enter', 'assets/main-menu/options-enter.png', {
       frameWidth: 640,
       frameHeight: 360
@@ -33,6 +36,14 @@ export class MainMenuScene extends Phaser.Scene {
     this.load.spritesheet('options-exit', 'assets/main-menu/options-exit.png', {
       frameWidth: 640,
       frameHeight: 360
+    });
+
+    // About Assets
+    this.load.image('background-about', 'assets/main-menu/bg-about.png');
+
+    this.load.spritesheet('fire-about', 'assets/main-menu/fire-about.png', {
+      frameWidth: 208,
+      frameHeight: 144
     });
 
     // Optionally load a click sound or menu move sound here
@@ -54,13 +65,16 @@ export class MainMenuScene extends Phaser.Scene {
     // 1. Animations
 
     // Static Backgrounds and moving parts
-    this.createBackground('background');
-    this.createMovingPart('fire', 206, 168, {
+
+    // ROOT
+    this.createBackground('background-root');
+    this.createMovingPart('fire-root', 206, 168, {
       frameRate: 10,
       start: 0,
       end: 23,
       loop: true
     });
+
     // Options Entering
     this.anims.create({
       key: 'options-enter',
@@ -84,6 +98,15 @@ export class MainMenuScene extends Phaser.Scene {
       frameRate: 28,
       repeat: 0
     });
+
+    // // About
+    // this.createBackground('background-about');
+    // this.createMovingPart('fire-about', 100, 100, {
+    //   frameRate: 10,
+    //   start: 0,
+    //   end: 23,
+    //   loop: true
+    // });
 
     // 2. Setup direction buttons
     this.setupInputHandlers();
@@ -289,10 +312,23 @@ export class MainMenuScene extends Phaser.Scene {
           this.renderMenuItems();
           this.updateMenuHighlight();
         });
+      } else if (label === 'About') {
+        // Destroy moving part of the root
+        this.createMovingPart(null);
+        // create new moving part
+        this.createBackground('background-about');
+        this.createMovingPart('fire-about', 424, 166, {
+          start: 0,
+          end: 23,
+          frameRate: 10,
+          loop: true
+        });
+        this.renderMenuItems();
+        this.updateMenuHighlight();
       } else {
         // Static submenu (e.g., About)
-        this.createBackground('background'); // fallback bg
-        this.createMovingPart('fire', 206, 168, {
+        this.createBackground('background-root'); // fallback bg
+        this.createMovingPart('fire-root', 206, 168, {
           start: 0,
           end: 23,
           frameRate: 10,
@@ -313,10 +349,10 @@ export class MainMenuScene extends Phaser.Scene {
     this.clearMenuTexts();
 
     if (this.currentMenu === 'Options') {
-      // Play exit animation, then restore static root bg + fire
+      // Play exit animation, then restore static root bg + fire-root
       this.createBackground('options-exit', () => {
-        this.createBackground('background');
-        this.createMovingPart('fire', 206, 168, {
+        this.createBackground('background-root');
+        this.createMovingPart('fire-root', 206, 168, {
           start: 0,
           end: 23,
           frameRate: 10,
@@ -326,8 +362,8 @@ export class MainMenuScene extends Phaser.Scene {
       });
     } else {
       // No animation needed, just go back
-      this.createBackground('background');
-      this.createMovingPart('fire', 206, 168, {
+      this.createBackground('background-root');
+      this.createMovingPart('fire-root', 206, 168, {
         start: 0,
         end: 23,
         frameRate: 10,
