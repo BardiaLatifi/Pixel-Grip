@@ -16,7 +16,7 @@ export class MainMenuScene extends Phaser.Scene {
   preload() {
     // ***** THIS ASSETS LOAD IS FOR DEBUG SCENE AND MUST DELETE AFTER DEBUGGING
 
-    // Root Assets
+    // *** Root Assets ***
     this.load.image('background-root', 'assets/main-menu/bg-root.png');
 
     this.load.spritesheet('fire-root', 'assets/main-menu/fire-root.png', {
@@ -24,7 +24,7 @@ export class MainMenuScene extends Phaser.Scene {
       frameHeight: 80
     });
 
-    // Options Assets
+    // *** Options Assets ***
     this.load.spritesheet('options-enter', 'assets/main-menu/options-enter.png', {
       frameWidth: 640,
       frameHeight: 360
@@ -38,12 +38,25 @@ export class MainMenuScene extends Phaser.Scene {
       frameHeight: 360
     });
 
-    // About Assets
+    // *** About Assets ***
     this.load.image('background-about', 'assets/main-menu/bg-about.png');
 
     this.load.spritesheet('fire-about', 'assets/main-menu/fire-about.png', {
       frameWidth: 208,
       frameHeight: 144
+    });
+
+    // the Paper
+    this.load.image('paper-static', 'assets/main-menu/paper-static.png');
+
+    this.load.spritesheet('paper-expand', 'assets/main-menu/paper-expand.png', {
+      frameWidth: 480,
+      frameHeight: 270
+    });
+
+    this.load.spritesheet('paper-collapse', 'assets/main-menu/paper-collapse.png', {
+      frameWidth: 480,
+      frameHeight: 270
     });
 
     // Optionally load a click sound or menu move sound here
@@ -99,14 +112,22 @@ export class MainMenuScene extends Phaser.Scene {
       repeat: 0
     });
 
-    // // About
-    // this.createBackground('background-about');
-    // this.createMovingPart('fire-about', 100, 100, {
-    //   frameRate: 10,
-    //   start: 0,
-    //   end: 23,
-    //   loop: true
-    // });
+    // About Project-Info
+    this.anims.create({
+      key: 'paper-expand',
+      frames: this.anims.generateFrameNumbers('paper-expand', { start: 0, end: 14 }),
+      frameRate: 16,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: 'paper-collapse',
+      frames: this.anims.generateFrameNumbers('paper-collapse', { start: 0, end: 14 }),
+      frameRate: 16,
+      repeat: 0
+    });
+
+
 
     // 2. Setup direction buttons
     this.setupInputHandlers();
@@ -180,7 +201,7 @@ export class MainMenuScene extends Phaser.Scene {
     });
 
     // --- Tap logic with visual feedback for button1 ---
-    const setupButtonWithActiveFeedback = (buttonEl, callback) => {
+    const buttonFeedback = (buttonEl, callback) => {
       buttonEl.addEventListener('touchstart', (e) => {
         e.preventDefault();
         buttonEl.classList.add('active');
@@ -195,13 +216,13 @@ export class MainMenuScene extends Phaser.Scene {
     };
 
     // Select (button1)
-    setupButtonWithActiveFeedback(button1, () => {
+    buttonFeedback(button1, () => {
       const selected = this.menuItems[this.currentIndex];
       this.enterSubMenu(selected);
     });
 
     // Back (button2)
-    setupButtonWithActiveFeedback(button2, () => {
+    buttonFeedback(button2, () => {
       if (this.currentMenu !== 'root') {
         this.exitSubMenu();
       }
@@ -341,15 +362,38 @@ export class MainMenuScene extends Phaser.Scene {
       // Handle top-level actions
       if (label === 'Play') {
         this.scene.start('YourGameScene');
+      } else if (label === 'Project Info') {
+        this.clearMenuTexts();
+        this.currentMenu = 'Project Info';
+
+        // Keep About’s fire‑animation intact, so NO createMovingPart(null) here
+        this.createBackground('background-about');
+
+        const cx = 320, cy = 180;
+        const paperAnim = this.add.sprite(cx, cy, 'paper-expand')
+          .setOrigin(0.5).setDepth(5)
+          .play('paper-expand');
+
+        paperAnim.once('animationcomplete', () => {
+          paperAnim.destroy();
+          // store the static paper so we can clean it later
+          this.paperStatic = this.add.image(cx, cy, 'paper-static')
+            .setOrigin(0.5).setDepth(5);
+        });
       }
+
     }
   }
 
   exitSubMenu() {
     this.clearMenuTexts();
 
+    // Center coordinates for paper
+    const cx = 320;
+    const cy = 180;
+
     if (this.currentMenu === 'Options') {
-      // Play exit animation, then restore static root bg + fire-root
+      // OPTIONS submenu: exit animation → go back to root
       this.createBackground('options-exit', () => {
         this.createBackground('background-root');
         this.createMovingPart('fire-root', 206, 168, {
@@ -360,8 +404,30 @@ export class MainMenuScene extends Phaser.Scene {
         });
         this.showRootMenu();
       });
+
+    } else if (this.currentMenu === 'Project Info') {
+      // 1. Remove Static Paper
+      if (this.paperStatic) {
+        this.paperStatic.destroy();
+        this.paperStatic = null;
+      }
+
+      // 2. Play Collapse & destroy it on complete
+      const collapse = this.add.sprite(cx, cy, 'paper-collapse')
+        .setOrigin(0.5).setDepth(5)
+        .play('paper-collapse');
+
+      collapse.once('animationcomplete', () => {
+        collapse.destroy();            // ← kill the collapse sprite
+        // 3. Return to Root
+        this.createBackground('background-root');
+        this.createMovingPart('fire-root', 206, 168, {
+          start: 0, end: 23, frameRate: 10, loop: true
+        });
+        this.showRootMenu();
+      });
     } else {
-      // No animation needed, just go back
+      // OTHER submenus: just go back
       this.createBackground('background-root');
       this.createMovingPart('fire-root', 206, 168, {
         start: 0,
@@ -372,6 +438,8 @@ export class MainMenuScene extends Phaser.Scene {
       this.showRootMenu();
     }
   }
+
+
 
   showRootMenu() {
     this.currentMenu = 'root';
