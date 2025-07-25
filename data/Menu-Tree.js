@@ -75,6 +75,7 @@ export const MENU_TREE = {
     menuItems: ['Project Info', 'Grip Guide']
   },
 
+  // why these two are like that?! why they are strings as key?
   'project-info': {
     id: 'project-info',
     type: 'menu',
