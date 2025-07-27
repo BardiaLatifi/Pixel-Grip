@@ -1,4 +1,4 @@
-import { DisplayManager } from '../DisplayManager.js';
+import { DisplayManager } from '../tools/DisplayManager.js';
 
 export class Initialization extends Phaser.Scene {
   constructor() {

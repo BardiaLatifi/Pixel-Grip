@@ -1,5 +1,5 @@
 import { connectUIListeners, setupJoystick, setupFullscreenToggle } from './dom-ui.js';
-import { DisplayManager } from './DisplayManager.js';
+import { DisplayManager } from './tools/DisplayManager.js';
 
 import { Initialization } from './scenes/Initialization.js';
 import { BootScene } from './scenes/BootScene.js';

@@ -1,6 +1,6 @@
 // scenes/MainMenuScene.js
 import { MENU_TREE } from '../data/Menu-Tree.js';
-import EnvironmentManager from '../EnvironmentManager.js';
+import EnvironmentManager from '../tools/EnvironmentManager.js';
 
 
 export class MainMenuScene extends Phaser.Scene {
