@@ -2,9 +2,11 @@ export const MENU_TREE = {
   root: {
     id: 'root',
     type: 'menu',
+    envType: 'split',
     background: 'background-root',
     movingPart: {
       key: 'fire-root',
+      anim: 'fire-root', // ✅ You were missing this
       x: 206,
       y: 168,
       config: { start: 0, end: 23, frameRate: 10, loop: true }
@@ -25,10 +27,25 @@ export const MENU_TREE = {
   options: {
     id: 'options',
     type: 'menu',
+    envType: 'solid',
     parent: 'root',
     background: 'options-loop',
+    animation: {
+      start: 0,
+      end: 10,
+      frameRate: 18,
+      loop: true,
+      x: 320,
+      y: 180
+    },
     enterAnimation: 'options-enter',
     exitAnimation: 'options-exit',
+    transitionConfig: {
+      frameRate: 25,
+      start: 0,
+      end: 9
+    },
+    useSpriteAnimation: true,
     children: ['audio', 'controls', 'themes'],
     menuItems: ['Audio', 'Controls', 'Themes']
   },
