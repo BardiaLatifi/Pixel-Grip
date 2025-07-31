@@ -53,6 +53,7 @@ export const MENU_TREE = {
   audio: {
     id: 'audio',
     type: 'menu',
+    envType: 'inherit',
     parent: 'options',
     background: 'background-audio',
     menuItems: [],
@@ -62,6 +63,7 @@ export const MENU_TREE = {
   controls: {
     id: 'controls',
     type: 'menu',
+    envType: 'inherit',
     parent: 'options',
     background: 'background-controls',
     menuItems: [],
@@ -71,6 +73,7 @@ export const MENU_TREE = {
   themes: {
     id: 'themes',
     type: 'menu',
+    envType: 'inherit',
     parent: 'options',
     background: 'background-themes',
     menuItems: [],
@@ -80,6 +83,7 @@ export const MENU_TREE = {
   about: {
     id: 'about',
     type: 'menu',
+    envType: 'split',
     parent: 'root',
     background: 'background-about',
     movingPart: {
@@ -96,6 +100,7 @@ export const MENU_TREE = {
   'project-info': {
     id: 'project-info',
     type: 'menu',
+    envType: 'inherit',
     parent: 'about',
     background: 'background-project-info',
     menuItems: [],
@@ -105,6 +110,7 @@ export const MENU_TREE = {
   'grip-guide': {
     id: 'grip-guide',
     type: 'menu',
+    envType: 'inherit',
     parent: 'about',
     background: 'background-grip-guide',
     menuItems: [],

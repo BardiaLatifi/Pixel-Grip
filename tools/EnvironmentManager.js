@@ -4,11 +4,12 @@ export default class EnvironmentManager {
   constructor(phaserScene) {
     this.tree = MENU_TREE;
     this.scene = phaserScene;
-    this.history = [];
     this.currentNodeId = null;
     this.history = [];
+    this.pathStack = ["root"];
     this.currentBg = null;
     this.currentMovingPart = null;
+    this.isTransitioning = false;
   }
 
   setScene(scene) {
@@ -16,88 +17,119 @@ export default class EnvironmentManager {
   }
 
   goTo(nodeId) {
+    if (this.isTransitioning) return;
+
     const nextNode = this.tree[nodeId];
     if (!nextNode) return;
 
     const currentNode = this.currentNode;
 
-    // If we have an exit animation on current node, play it first
-    if (currentNode && currentNode.exitAnimation) {
+    // ⬇️ Going deeper (into a child)
+    if (currentNode?.children?.includes(nodeId)) {
+      this.pathStack.push(nodeId);
+
+      const skipTransition = nextNode.envType === "inherit";
+      if (skipTransition) {
+        this.currentNodeId = nextNode.id;
+        this.currentNode = nextNode;
+        this.scene.renderMenuItems();
+        return;
+      }
+
+      this._completeTransition(nextNode);
+      return;
+    }
+
+    // ⬆️ Going back
+    const lastIndex = this.pathStack.length - 2;
+    const goingBack = this.pathStack[lastIndex] === nodeId;
+
+    if (goingBack) {
+      this.pathStack.pop();
+
+      // ✅ Skip enter anim for parent if current (child) was 'inherit'
+      const skipEnterAnim = currentNode?.envType === "inherit";
+
+      // ✅ But still run child's exit animation if defined
+      if (currentNode?.exitAnimation) {
+        this.transitionAnim(currentNode.exitAnimation, () => {
+          this._completeTransition(nextNode, { skipEnterAnim });
+        });
+      } else {
+        this._completeTransition(nextNode, { skipEnterAnim });
+      }
+
+      return;
+    }
+
+    // 🧹 Reset path for unrelated jump
+    this.pathStack = [nodeId];
+
+    if (currentNode?.exitAnimation) {
       this.transitionAnim(currentNode.exitAnimation, () => {
-        // After exit animation, switch node and play enter anim if any
         this._completeTransition(nextNode);
       });
     } else {
-      // No exit animation, just complete transition directly
       this._completeTransition(nextNode);
     }
   }
 
-  _completeTransition(nextNode) {
+  _completeTransition(nextNode, { skipEnterAnim = false } = {}) {
+    const isSameNode = this.currentNodeId === nextNode.id;
+    const isSameEnv = nextNode.envType === this.currentNode?.envType;
+
+    // 🧠 New logic: coming back from a child with 'inherit'
+    const comingFromInheritedChild = this.currentNode?.envType === 'inherit' &&
+      this.pathStack.includes(nextNode.id);
+
+    // ✅ Skip if we're already in same env, or returning from an inherited child
+    const skipEnvUpdate = isSameNode ||
+      (nextNode.envType !== 'inherit' && isSameEnv) ||
+      comingFromInheritedChild;
+
     this.currentNodeId = nextNode.id;
     this.currentNode = nextNode;
 
-    // If there is an enter animation on the new node, play it first
-    if (nextNode.enterAnimation) {
+    if (!skipEnterAnim && nextNode.enterAnimation && !skipEnvUpdate) {
       this.transitionAnim(nextNode.enterAnimation, () => {
-        // After enter animation, apply the environment visuals
         this.applyEnvironment(nextNode);
+        this.scene.renderMenuItems();
       });
     } else {
-      // No enter animation, apply environment immediately
-      this.applyEnvironment(nextNode);
+      if (!skipEnvUpdate) this.applyEnvironment(nextNode);
+      this.scene.renderMenuItems();
     }
   }
-
-
-  // goBack() {
-  //   if (this.history.length === 0) return;
-
-  //   const previousNodeId = this.history.pop();
-  //   this.currentNodeId = previousNodeId;
-  //   this.currentNode = this.tree[previousNodeId];
-
-  //   // Perform animation logic or environment setup here
-  //   // Example placeholder:
-  //   console.log(`Going back to: ${previousNodeId}`);
-  // }
 
   applyEnvironment(node) {
     if (!node) return;
 
-    this.clearEnv(); // remove previous bg and moving parts if any
+    // Skip environment changes for "inherit"
+    if (node.envType === 'inherit') {
+      console.log(`EnvironmentManager: '${node.id}' inherits environment — skipping environment update.`);
+      return;
+    }
 
-    // Store current node state
+    this.clearEnv(); // Clean up previous visuals
     this.currentNode = node;
     this.currentNodeId = node.id;
 
-    // Animation strategy switch
     switch (node.envType) {
       case "split":
         this.splittedAnim(node);
         break;
-
       case "solid":
         this.solidAnim(node);
         break;
-
       case "transition":
         this.transitionAnim(node);
         break;
-
       default:
         console.warn(`EnvironmentManager: Unknown envType '${node.envType}' for node '${node.id}'`);
-        // You can add fallback logic here if needed
-        break;
     }
 
     console.log(`EnvironmentManager: Applied environment for '${node.id}'`);
-    console.log(node.envType);
   }
-
-
-
-
 
   getCurrent() {
     // Return the current environment node
@@ -114,6 +146,17 @@ export default class EnvironmentManager {
     }
   }
 
+  // Helper method inside EnvironmentManager to create animation if missing
+  _createAnim(key, start, end, frameRate, loop = false) {
+    if (!this.scene.anims.exists(key)) {
+      this.scene.anims.create({
+        key,
+        frames: this.scene.anims.generateFrameNumbers(key, { start, end }),
+        frameRate,
+        repeat: loop ? -1 : 0,
+      });
+    }
+  }
 
   solidAnim(node) {
     if (!node || node.envType !== 'solid') {
@@ -124,7 +167,6 @@ export default class EnvironmentManager {
     this.clearEnv();
 
     const bgKey = node.background;
-
     if (!bgKey) {
       console.warn(`solidAnim: No background key defined for '${node.id}'`);
       return;
@@ -134,14 +176,7 @@ export default class EnvironmentManager {
       const animKey = bgKey;
       const { start, end, frameRate = 10, loop = false } = node.animation;
 
-      if (!this.scene.anims.exists(animKey)) {
-        this.scene.anims.create({
-          key: animKey,
-          frames: this.scene.anims.generateFrameNumbers(bgKey, { start, end }),
-          frameRate,
-          repeat: loop ? -1 : 0
-        });
-      }
+      this._createAnim(animKey, start, end, frameRate, loop);
 
       this.background = this.scene.add.sprite(
         node.animation.x || 0,
@@ -153,44 +188,35 @@ export default class EnvironmentManager {
     }
   }
 
+  splittedAnim(node) {
+    if (!node || node.envType !== 'split') return;
 
+    const { background, movingPart } = node;
 
-  splittedAnim() {
-    if (!this.currentNode || this.currentNode.envType !== 'split') return;
-
-    const { background, movingPart } = this.currentNode;
-
-    // Create and display background
     if (background) {
       this.background = this.scene.add.image(0, 0, background).setOrigin(0);
     }
 
-    // Validate movingPart config
     if (!movingPart || !movingPart.key || !movingPart.config) {
-      console.warn(`splittedAnim: Invalid or missing movingPart config for '${this.currentNode.id}'`);
+      console.warn(`splittedAnim: Invalid or missing movingPart config for '${node.id}'`);
       return;
     }
 
     const { key, x = 0, y = 0, config } = movingPart;
 
-    // Only create the animation if it doesn't exist
-    if (!this.scene.anims.exists(key)) {
-      this.scene.anims.create({
-        key: key,
-        frames: this.scene.anims.generateFrameNumbers(key, {
-          start: config.start,
-          end: config.end
-        }),
-        frameRate: config.frameRate || 10,
-        repeat: config.loop ? -1 : 0
-      });
-    }
+    this._createAnim(key, config.start, config.end, config.frameRate || 10, config.loop);
 
-    // Create and play the animated sprite
     this.movingPart = this.scene.add.sprite(x, y, key).play(key);
   }
 
   transitionAnim(animKey, onComplete) {
+    if (this.transitionSprite) {
+      this.transitionSprite.destroy();
+      this.transitionSprite = null;
+    }
+
+    this.isTransitioning = true;
+
     const config = this.currentNode?.transitionConfig || {};
     const {
       frameRate = 12,
@@ -200,35 +226,31 @@ export default class EnvironmentManager {
       y = this.scene.cameras.main.height / 2,
     } = config;
 
-    if (this.transitionSprite) {
-      this.transitionSprite.destroy();
-      this.transitionSprite = null;
-    }
+    this._createAnim(animKey, start, end, frameRate);
 
     this.transitionSprite = this.scene.add.sprite(x, y, animKey).setOrigin(0.5);
-
-    if (!this.scene.anims.exists(animKey)) {
-      this.scene.anims.create({
-        key: animKey,
-        frames: this.scene.anims.generateFrameNumbers(animKey, { start, end }),
-        frameRate,
-        repeat: 0,
-      });
-    }
-
     this.transitionSprite.play(animKey);
 
-    this.transitionSprite.on('animationcomplete', () => {
+    this.transitionSprite.once('animationcomplete', () => {
       this.transitionSprite.destroy();
       this.transitionSprite = null;
+      this.isTransitioning = false;
       if (onComplete) onComplete();
     });
   }
 
-
-
   transitionEffect(callback) {
     // Optional visual effect (e.g., fade in/out) during transition
   }
-}
 
+  textAnim() {
+    // this function creates animation like type writing text.
+    // it uses text property inside the data (menu tree or other data structures stored in the project) to display the text.
+    // the order of its functionality is like that:
+    // 1. displays a background for the text. a simple animation from a sprite sheet
+    // 2. detects the text placement by a formula (for example 50px 50px from top left corner of the background it just created).
+    // 3. displays the text with the type writing animation.
+    // 4. displays next icon if there is no answer to take, and displays the answer items if there is.
+    // 5. after next/answer goes for next text or next environment.
+  }
+}

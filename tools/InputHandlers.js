@@ -69,6 +69,7 @@ export function inputHandlers(scene) {
 
   // button1 = Enter submenu or run action
   actionButton(button1, () => {
+    if (scene.environmentManager.isTransitioning) return;
     const currentNode = MENU_TREE[scene.currentNodeId];
     const selectedChildId = currentNode.children?.[scene.currentIndex];
 
@@ -84,6 +85,7 @@ export function inputHandlers(scene) {
 
   // button2 = Go Back to parent
   actionButton(button2, () => {
+    if (scene.environmentManager.isTransitioning) return;
     const currentNode = MENU_TREE[scene.currentNodeId];
     const parentId = currentNode.parent;
 
