@@ -100,20 +100,25 @@ export const MENU_TREE = {
   'project-info': {
     id: 'project-info',
     type: 'menu',
-    envType: 'inherit',
+    envType: 'text',
     parent: 'about',
-    background: 'background-project-info',
-    menuItems: [],
-    children: []
+    textSequence: [
+      "Welcome to the project info.",
+      "This project is created with Phaser and JS.",
+      "Enjoy navigating through the menus!"
+    ],
   },
 
   'grip-guide': {
     id: 'grip-guide',
     type: 'menu',
-    envType: 'inherit',
+    envType: 'text',
     parent: 'about',
-    background: 'background-grip-guide',
-    menuItems: [],
-    children: []
-  }
+    textSequence: [
+      "Grip Guide:",
+      "Use button1 to move forward in the text.",
+      "Use button2 to go back or exit.",
+    ],
+  },
+
 };

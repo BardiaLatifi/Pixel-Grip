@@ -48,7 +48,8 @@ export default class EnvironmentManager {
       this.pathStack.pop();
 
       // ✅ Skip enter anim for parent if current (child) was 'inherit'
-      const skipEnterAnim = currentNode?.envType === "inherit";
+      const skipEnterAnim = currentNode?.envType === "inherit" || currentNode?.envType === "text";
+
 
       // ✅ But still run child's exit animation if defined
       if (currentNode?.exitAnimation) {
@@ -84,7 +85,7 @@ export default class EnvironmentManager {
 
     // ✅ Skip if we're already in same env, or returning from an inherited child
     const skipEnvUpdate = isSameNode ||
-      (nextNode.envType !== 'inherit' && isSameEnv) ||
+      (isSameEnv && this.currentNodeId === nextNode.id) ||
       comingFromInheritedChild;
 
     this.currentNodeId = nextNode.id;
@@ -93,27 +94,29 @@ export default class EnvironmentManager {
     if (!skipEnterAnim && nextNode.enterAnimation && !skipEnvUpdate) {
       this.transitionAnim(nextNode.enterAnimation, () => {
         this.applyEnvironment(nextNode);
-        this.scene.renderMenuItems();
+        if (nextNode.envType !== 'text') this.scene.renderMenuItems();
       });
     } else {
       if (!skipEnvUpdate) this.applyEnvironment(nextNode);
-      this.scene.renderMenuItems();
+      if (nextNode.envType !== 'text') this.scene.renderMenuItems();
     }
   }
 
   applyEnvironment(node) {
     if (!node) return;
 
-    // Skip environment changes for "inherit"
     if (node.envType === 'inherit') {
       console.log(`EnvironmentManager: '${node.id}' inherits environment — skipping environment update.`);
       return;
     }
 
-    this.clearEnv(); // Clean up previous visuals
-    this.currentNode = node;
-    this.currentNodeId = node.id;
 
+    if (node.envType !== 'inherit' && node.envType !== 'text') {
+      this.clearEnv();
+    }
+
+
+    // Normal environment application for split/solid/transition
     switch (node.envType) {
       case "split":
         this.splittedAnim(node);
@@ -124,12 +127,16 @@ export default class EnvironmentManager {
       case "transition":
         this.transitionAnim(node);
         break;
+      case "text":
+        this._applyTextEnvironment(node)
+        break;
       default:
         console.warn(`EnvironmentManager: Unknown envType '${node.envType}' for node '${node.id}'`);
     }
 
     console.log(`EnvironmentManager: Applied environment for '${node.id}'`);
   }
+
 
   getCurrent() {
     // Return the current environment node
@@ -239,18 +246,130 @@ export default class EnvironmentManager {
     });
   }
 
-  transitionEffect(callback) {
-    // Optional visual effect (e.g., fade in/out) during transition
-  }
+  // EnvironmentManager.js additions / updates
 
   textAnim() {
-    // this function creates animation like type writing text.
-    // it uses text property inside the data (menu tree or other data structures stored in the project) to display the text.
-    // the order of its functionality is like that:
-    // 1. displays a background for the text. a simple animation from a sprite sheet
-    // 2. detects the text placement by a formula (for example 50px 50px from top left corner of the background it just created).
-    // 3. displays the text with the type writing animation.
-    // 4. displays next icon if there is no answer to take, and displays the answer items if there is.
-    // 5. after next/answer goes for next text or next environment.
+    // Only called when currentNode.envType === 'text'
+    // Setup initial text display state
+
+    if (!this.currentNode || this.currentNode.envType !== 'text') return;
+
+    this.clearTextUI();
+    this.scene.clearMenuTexts?.();
+
+    const sequence = this.currentNode.textSequence; // We'll store text array here
+
+    if (!Array.isArray(sequence) || sequence.length === 0) {
+      console.warn(`[textAnim] No valid text sequence in node '${this.currentNode.id}'`);
+      return;
+    }
+
+    this.textState = {
+      index: 0,
+      sequence,
+      textObject: null,
+      isAnimating: false,
+    };
+
+    this._showTextLine();
+  }
+
+  _showTextLine() {
+    if (!this.textState) return;
+
+    const { index, sequence } = this.textState;
+    if (index >= sequence.length) return;
+
+    const line = sequence[index];
+
+    // Destroy old text
+    if (this.textState.textObject) this.textState.textObject.destroy();
+
+    const style = { fontSize: '20px', fill: '#fff' }; // Basic style; customize as needed
+    const x = 60, y = 60;
+
+    const text = this.scene.add.text(x, y, '', style);
+    this.textState.textObject = text;
+
+    let i = 0;
+    const fullText = line;
+    this.textState.isAnimating = true;
+
+    this.scene.time.addEvent({
+      delay: 30,
+      repeat: fullText.length - 1,
+      callback: () => {
+        if (!text.active || !text.scene) return; // <- prevents crash if destroyed
+        text.text += fullText[i];
+        i++;
+        if (i === fullText.length) {
+          this.textState.isAnimating = false;
+        }
+      }
+    });
+
+  }
+
+  _textForward() {
+    const node = this.currentNode;
+    if (!node.textSequence) return;
+
+    if (this.textState?.isAnimating) {
+      const fullText = this.textState.sequence[this.textState.index];
+      this.textState.textObject.text = fullText;
+      this.textState.isAnimating = false;
+      return;
+    }
+
+    if (this.textState.index < node.textSequence.length - 1) {
+      this.textState.index++;
+      this._showTextLine();
+    } else {
+      // End of text sequence - go back to parent menu
+      const parentId = node.parent;
+      if (parentId) {
+        this.scene.currentNodeId = parentId;
+        this.scene.currentIndex = 0;
+        this.goTo(parentId);
+        this.scene.renderMenuItems();
+      }
+    }
+  }
+
+  _textBack() {
+    const node = this.currentNode;
+    if (!node.textSequence) return;
+
+    if (this.textIndex > 0) {
+      this.textIndex--;
+      this._showTextLine();
+    } else {
+      // At first text - go back to parent menu
+      const parentId = node.parent;
+      if (parentId) {
+        this.scene.currentNodeId = parentId;
+        this.scene.currentIndex = 0;
+        this.goTo(parentId);
+        this.scene.renderMenuItems();
+      }
+    }
+  }
+
+
+  clearTextUI() {
+    if (!this.textState) return;
+
+    if (this.textState.textObject) {
+      this.textState.textObject.destroy();
+      this.textState.textObject = null;
+    }
+
+    this.textState = null;
+  }
+
+  _applyTextEnvironment(node) {
+    this.activeTextNodeId = node.id;
+    this.activeTextIndex = 0;
+    this.textAnim(node.textSequence[0]); // display first text
   }
 }

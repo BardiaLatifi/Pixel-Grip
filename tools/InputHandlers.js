@@ -54,7 +54,6 @@ export function inputHandlers(scene) {
     downButton.addEventListener(evt, stopHold);
   });
 
-  // Utility to handle action button with touch feedback and callback
   const actionButton = (el, callback) => {
     el.addEventListener('touchstart', (e) => {
       e.preventDefault();
@@ -67,37 +66,63 @@ export function inputHandlers(scene) {
     });
   };
 
-  // button1 = Enter submenu or run action
+  // button1 = Enter submenu or run action / forward text
   actionButton(button1, () => {
-    if (scene.environmentManager.isTransitioning) return;
-    const currentNode = MENU_TREE[scene.currentNodeId];
-    const selectedChildId = currentNode.children?.[scene.currentIndex];
+    const envManager = scene.environmentManager;
+    if (envManager.isTransitioning) return;
 
+    const currentNode = MENU_TREE[scene.currentNodeId];
+
+    // if it's a text node, trigger forward
+    if (currentNode.envType === 'text') {
+      envManager._textForward();
+      return;
+    }
+
+    const selectedChildId = currentNode.children?.[scene.currentIndex];
     if (selectedChildId) {
-      scene.environmentManager.goTo(selectedChildId);
+      envManager.goTo(selectedChildId);
       scene.currentNodeId = selectedChildId;
       scene.currentIndex = 0;
-      scene.renderMenuItems();
+
+      // 🔹 Only render menu if the target node is NOT a text node
+      if (!MENU_TREE[selectedChildId]?.envType || MENU_TREE[selectedChildId].envType !== 'text') {
+        scene.renderMenuItems();
+      }
     } else {
       console.log(`Selected action: ${currentNode.menuItems[scene.currentIndex]}`);
     }
   });
 
-  // button2 = Go Back to parent
-  actionButton(button2, () => {
-    if (scene.environmentManager.isTransitioning) return;
-    const currentNode = MENU_TREE[scene.currentNodeId];
-    const parentId = currentNode.parent;
 
+  // button2 = Go Back to parent / back text
+  actionButton(button2, () => {
+    const envManager = scene.environmentManager;
+    if (envManager.isTransitioning) return;
+
+    const currentNode = MENU_TREE[scene.currentNodeId];
+
+    if (currentNode.envType === 'text') {
+      envManager._textBack();
+      return;
+    }
+
+    const parentId = currentNode.parent;
     if (parentId) {
-      scene.environmentManager.goTo(parentId);
+      envManager.goTo(parentId);
       scene.currentNodeId = parentId;
       scene.currentIndex = 0;
-      scene.renderMenuItems();
-    } else {
+
+      // 🔹 Only render menu if the parent is not a text node
+      if (!MENU_TREE[parentId]?.envType || MENU_TREE[parentId].envType !== 'text') {
+        scene.renderMenuItems();
+      }
+    }
+    else {
       console.log('Already at root node.');
     }
   });
+
 
 
 
