@@ -123,9 +123,6 @@ export function inputHandlers(scene) {
     }
   });
 
-
-
-
   // Flags
   if (sceneKey === 'MainMenuScene') {
     // 1. UI Mode: Show D-Pad, Hide Joystick

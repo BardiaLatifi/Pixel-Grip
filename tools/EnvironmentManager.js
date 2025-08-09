@@ -76,8 +76,14 @@ export default class EnvironmentManager {
   }
 
   _completeTransition(nextNode, { skipEnterAnim = false } = {}) {
+    const oldNode = this.currentNode;
     const isSameNode = this.currentNodeId === nextNode.id;
     const isSameEnv = nextNode.envType === this.currentNode?.envType;
+
+    // 🧹 If we are leaving a text node, clear its UI
+    if (oldNode?.envType === 'text' && nextNode.envType !== 'text') {
+      this.clearTextUI?.();
+    }
 
     // 🧠 New logic: coming back from a child with 'inherit'
     const comingFromInheritedChild = this.currentNode?.envType === 'inherit' &&
@@ -101,6 +107,7 @@ export default class EnvironmentManager {
       if (nextNode.envType !== 'text') this.scene.renderMenuItems();
     }
   }
+
 
   applyEnvironment(node) {
     if (!node) return;
@@ -331,28 +338,48 @@ export default class EnvironmentManager {
         this.scene.currentNodeId = parentId;
         this.scene.currentIndex = 0;
         this.goTo(parentId);
-        this.scene.renderMenuItems();
+        return;
       }
     }
   }
 
   _textBack() {
     const node = this.currentNode;
-    if (!node.textSequence) return;
+    if (!node || node.envType !== 'text' || !this.textState) return;
 
-    if (this.textIndex > 0) {
-      this.textIndex--;
-      this._showTextLine();
-    } else {
-      // At first text - go back to parent menu
-      const parentId = node.parent;
-      if (parentId) {
-        this.scene.currentNodeId = parentId;
-        this.scene.currentIndex = 0;
-        this.goTo(parentId);
-        this.scene.renderMenuItems();
+    // 1) If currently animating, finish this line immediately
+    if (this.textState.isAnimating) {
+      // Cancel the animation timer if you stored it
+      if (this.textState.animEvent) {
+        this.textState.animEvent.remove(false);
+        this.textState.animEvent = null;
       }
+
+      const fullText = this.textState.sequence[this.textState.index];
+      if (this.textState.textObject && fullText !== undefined) {
+        this.textState.textObject.setText(fullText);
+      }
+      this.textState.isAnimating = false;
+      return;
     }
+
+    // 2) If there's a previous line in the sequence, step back one line
+    if (this.textState.index > 0) {
+      this.textState.index--;
+      this._showTextLine();   // re-renders based on this.textState.index
+      return;
+    }
+
+    // 3) At first line -> go back to parent node
+    const parentId = node.parent;
+    if (parentId) {
+      this.scene.currentNodeId = parentId;
+      this.scene.currentIndex = 0;
+      this.goTo(parentId);
+      return;
+    }
+
+    console.log('Already at root node.');
   }
 
 
