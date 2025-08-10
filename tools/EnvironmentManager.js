@@ -47,11 +47,10 @@ export default class EnvironmentManager {
     if (goingBack) {
       this.pathStack.pop();
 
-      // ✅ Skip enter anim for parent if current (child) was 'inherit'
+      // Skip enter anim for parent if current (child) was 'inherit'
       const skipEnterAnim = currentNode?.envType === "inherit" || currentNode?.envType === "text";
 
-
-      // ✅ But still run child's exit animation if defined
+      // But still run child's exit animation if defined
       if (currentNode?.exitAnimation) {
         this.transitionAnim(currentNode.exitAnimation, () => {
           this._completeTransition(nextNode, { skipEnterAnim });
@@ -63,7 +62,7 @@ export default class EnvironmentManager {
       return;
     }
 
-    // 🧹 Reset path for unrelated jump
+    // Reset path for unrelated jump
     this.pathStack = [nodeId];
 
     if (currentNode?.exitAnimation) {
@@ -80,16 +79,16 @@ export default class EnvironmentManager {
     const isSameNode = this.currentNodeId === nextNode.id;
     const isSameEnv = nextNode.envType === this.currentNode?.envType;
 
-    // 🧹 If we are leaving a text node, clear its UI
+    // If we are leaving a text node, clear its UI
     if (oldNode?.envType === 'text' && nextNode.envType !== 'text') {
       this.clearTextUI?.();
     }
 
-    // 🧠 New logic: coming back from a child with 'inherit'
+    // New logic: coming back from a child with 'inherit'
     const comingFromInheritedChild = this.currentNode?.envType === 'inherit' &&
       this.pathStack.includes(nextNode.id);
 
-    // ✅ Skip if we're already in same env, or returning from an inherited child
+    // Skip if we're already in same env, or returning from an inherited child
     const skipEnvUpdate = isSameNode ||
       (isSameEnv && this.currentNodeId === nextNode.id) ||
       comingFromInheritedChild;
@@ -108,7 +107,6 @@ export default class EnvironmentManager {
     }
   }
 
-
   applyEnvironment(node) {
     if (!node) return;
 
@@ -121,7 +119,6 @@ export default class EnvironmentManager {
     if (node.envType !== 'inherit' && node.envType !== 'text') {
       this.clearEnv();
     }
-
 
     // Normal environment application for split/solid/transition
     switch (node.envType) {
@@ -143,7 +140,6 @@ export default class EnvironmentManager {
 
     console.log(`EnvironmentManager: Applied environment for '${node.id}'`);
   }
-
 
   getCurrent() {
     // Return the current environment node
@@ -292,7 +288,7 @@ export default class EnvironmentManager {
     // Destroy old text
     if (this.textState.textObject) this.textState.textObject.destroy();
 
-    const style = { fontSize: '20px', fill: '#fff' }; // Basic style; customize as needed
+    const style = { fontSize: '20px', fill: '#fff' };
     const x = 60, y = 60;
 
     const text = this.scene.add.text(x, y, '', style);
@@ -302,43 +298,48 @@ export default class EnvironmentManager {
     const fullText = line;
     this.textState.isAnimating = true;
 
-    this.scene.time.addEvent({
+    // Save the timed event so we can cancel it on fast-forward
+    this.textState.animEvent = this.scene.time.addEvent({
       delay: 30,
       repeat: fullText.length - 1,
       callback: () => {
-        if (!text.active || !text.scene) return; // <- prevents crash if destroyed
+        if (!text.active || !text.scene) return; // Prevent crash if destroyed
         text.text += fullText[i];
         i++;
         if (i === fullText.length) {
           this.textState.isAnimating = false;
+          this.textState.animEvent = null;
         }
       }
     });
-
   }
 
   _textForward() {
     const node = this.currentNode;
-    if (!node.textSequence) return;
+    if (!node.textSequence || !this.textState) return;
 
-    if (this.textState?.isAnimating) {
+    // If animating, fast-forward (cancel timer, reveal full text)
+    if (this.textState.isAnimating) {
+      if (this.textState.animEvent) {
+        this.textState.animEvent.remove(false);
+        this.textState.animEvent = null;
+      }
       const fullText = this.textState.sequence[this.textState.index];
-      this.textState.textObject.text = fullText;
+      this.textState.textObject.setText(fullText);
       this.textState.isAnimating = false;
-      return;
+      return; // Important: stop here, don't start new animation
     }
 
+    // Otherwise, go to next text line or parent node if at end
     if (this.textState.index < node.textSequence.length - 1) {
       this.textState.index++;
       this._showTextLine();
     } else {
-      // End of text sequence - go back to parent menu
       const parentId = node.parent;
       if (parentId) {
         this.scene.currentNodeId = parentId;
         this.scene.currentIndex = 0;
         this.goTo(parentId);
-        return;
       }
     }
   }
@@ -347,9 +348,8 @@ export default class EnvironmentManager {
     const node = this.currentNode;
     if (!node || node.envType !== 'text' || !this.textState) return;
 
-    // 1) If currently animating, finish this line immediately
+    // 1) If currently animating, finish this line immediately (fast-forward)
     if (this.textState.isAnimating) {
-      // Cancel the animation timer if you stored it
       if (this.textState.animEvent) {
         this.textState.animEvent.remove(false);
         this.textState.animEvent = null;
@@ -360,13 +360,13 @@ export default class EnvironmentManager {
         this.textState.textObject.setText(fullText);
       }
       this.textState.isAnimating = false;
-      return;
+      return;  // Stop here to avoid restarting animation
     }
 
     // 2) If there's a previous line in the sequence, step back one line
     if (this.textState.index > 0) {
       this.textState.index--;
-      this._showTextLine();   // re-renders based on this.textState.index
+      this._showTextLine();  // Re-render based on updated index
       return;
     }
 
@@ -379,9 +379,9 @@ export default class EnvironmentManager {
       return;
     }
 
+    // Optionally, you can log if already at root node (no parent)
     console.log('Already at root node.');
   }
-
 
   clearTextUI() {
     if (!this.textState) return;
