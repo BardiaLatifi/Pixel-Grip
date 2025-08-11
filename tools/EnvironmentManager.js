@@ -288,8 +288,13 @@ export default class EnvironmentManager {
     // Destroy old text
     if (this.textState.textObject) this.textState.textObject.destroy();
 
-    const style = { fontSize: '20px', fill: '#fff' };
-    const x = 60, y = 60;
+    const style = {
+      fontSize: '16px',
+      fill: '#fff',
+      wordWrap: { width: 580, useAdvancedWrap: true }
+    };
+
+    const x = 60, y = 45;
 
     const text = this.scene.add.text(x, y, '', style);
     this.textState.textObject = text;
