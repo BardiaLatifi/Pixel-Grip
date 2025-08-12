@@ -290,6 +290,7 @@ export default class EnvironmentManager {
 
     const style = {
       fontSize: '16px',
+      fontFamily: '"Cormorant Garamond", serif',
       fill: '#fff',
       wordWrap: { width: 580, useAdvancedWrap: true }
     };

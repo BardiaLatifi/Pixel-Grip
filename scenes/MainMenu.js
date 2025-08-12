@@ -27,6 +27,8 @@ export class MainMenuScene extends Phaser.Scene {
   preload() {
     // ***** THIS ASSETS LOAD IS FOR DEBUG SCENE AND MUST DELETE AFTER DEBUGGING
 
+    this.load.script('webfont', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js');
+
     // *** Root Assets ***
     this.load.image('background-root', 'assets/main-menu/bg-root.png');
 
