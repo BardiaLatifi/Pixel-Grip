@@ -72,6 +72,8 @@ export class MainMenuScene extends Phaser.Scene {
       frameHeight: 270
     });
 
+    this.load.image('paper', 'assets/main-menu/paper.png');
+
     // Optionally load a click sound or menu move sound here
   }
 

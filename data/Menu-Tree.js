@@ -102,6 +102,15 @@ export const MENU_TREE = {
     type: 'menu',
     envType: 'text',
     parent: 'about',
+    x: 60,
+    y: 45,
+    fontSize: '16px',
+    fontFamily: '"Cormorant Garamond", serif',
+    fill: 'black', 
+    crop: { 
+      width:  570, 
+      height: 315 
+    },    
     textSequence: [
       "You might be wondering what exactly this project is.\n\n I'm here to explain what’s going on.",
       "It’s a Virtual Handheld Gaming Console created with Phaser JS.\n\n Phaser is a fast and lightweight game development\n\n framework made for creating 2D games.",
@@ -119,6 +128,15 @@ export const MENU_TREE = {
     type: 'menu',
     envType: 'text',
     parent: 'about',
+    x: 60,
+    y: 45,
+    fontSize: '16px',
+    fontFamily: '"Cormorant Garamond", serif',
+    fill: 'black', 
+    crop: { 
+      width:  570, 
+      height: 325 
+    },  
     textSequence: [
       "How does this handheld console work for the user?",
       "Initialization Scene: \n\n\n As you may have noticed, Pixel Grip detects your \n\n smartphone’s orientation.\n\n If it’s vertical (the default way to hold a SmartPhone),\n\n it will detect this and show a message asking you\n\n to rotate your phone.",

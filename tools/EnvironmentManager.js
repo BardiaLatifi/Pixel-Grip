@@ -288,17 +288,34 @@ export default class EnvironmentManager {
     // Destroy old text
     if (this.textState.textObject) this.textState.textObject.destroy();
 
+    // ----- STYLE -----
     const style = {
-      fontSize: '16px',
-      fontFamily: '"Cormorant Garamond", serif',
-      fill: '#fff',
-      wordWrap: { width: 580, useAdvancedWrap: true }
+      fontSize: this.currentNode.fontSize,
+      fontFamily: this.currentNode.fontFamily,
+      fill: this.currentNode.fill,
+      wordWrap: { width: this.currentNode.crop.width, useAdvancedWrap: true }
     };
 
-    const x = 60, y = 45;
+    // ----- TEXT POSITION -----
+    const x = this.currentNode.x;
+    const y = this.currentNode.y;
 
     const text = this.scene.add.text(x, y, '', style);
     this.textState.textObject = text;
+
+    // ----- PAPER BACKGROUND -----
+    if (this.currentNode.crop) {
+      if (!this.textState.paperObject) {
+        const px = 0;
+        const py = 0;
+        const pw = this.currentNode.crop.width;  // 25px padding left+right
+        const ph = this.currentNode.crop.height; // 25px padding top+bottom
+        this.textState.paperObject = this.scene.add.image(this.currentNode.x - 25, this.currentNode.y - 25, 'paper')
+        .setOrigin(0, 0)
+          .setCrop(px, py, pw, ph)
+          .setDepth(0);
+      }
+    }
 
     let i = 0;
     const fullText = line;
@@ -318,6 +335,7 @@ export default class EnvironmentManager {
         }
       }
     });
+    text.setDepth(1);
   }
 
   _textForward() {
@@ -341,6 +359,11 @@ export default class EnvironmentManager {
       this.textState.index++;
       this._showTextLine();
     } else {
+      // Destroy paper when leaving node
+      if (this.textState.paperObject) {
+        this.textState.paperObject.destroy();
+        this.textState.paperObject = null;
+      }
       const parentId = node.parent;
       if (parentId) {
         this.scene.currentNodeId = parentId;
@@ -377,6 +400,10 @@ export default class EnvironmentManager {
     }
 
     // 3) At first line -> go back to parent node
+    if (this.textState.paperObject) {
+      this.textState.paperObject.destroy();
+      this.textState.paperObject = null;
+    }
     const parentId = node.parent;
     if (parentId) {
       this.scene.currentNodeId = parentId;
@@ -397,6 +424,11 @@ export default class EnvironmentManager {
       this.textState.textObject = null;
     }
 
+    // ----- DESTROY PAPER -----
+    if (this.textState.paperObject) {
+      this.textState.paperObject.destroy();
+      this.textState.paperObject = null;
+    }
     this.textState = null;
   }
 
