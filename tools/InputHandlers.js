@@ -68,6 +68,9 @@ export function inputHandlers(scene) {
 
   // button1 = Enter submenu or run action / forward text
   actionButton(button1, () => {
+
+    // scene.playSFX('sfx_select', 0.8);
+
     const envManager = scene.environmentManager;
     if (envManager.isTransitioning) return;
 

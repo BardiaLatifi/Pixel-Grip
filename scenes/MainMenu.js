@@ -21,6 +21,9 @@ export class MainMenuScene extends Phaser.Scene {
 
     // UI Elements
     this.textElements = [];
+
+    // to prevent first sound trigger
+    this._menuHighlightFirstCall = true;
   }
 
 
@@ -74,7 +77,14 @@ export class MainMenuScene extends Phaser.Scene {
 
     this.load.image('paper', 'assets/main-menu/paper.png');
 
-    // Optionally load a click sound or menu move sound here
+    // **** Sound Effects ****//
+    this.load.audio('sfx_hover', 'assets/main-menu/audio/hover.mp3');
+    this.load.audio('sfx_select', 'assets/main-menu/audio/select.mp3');
+    this.load.audio('sfx_fire', 'assets/main-menu/audio/fire.mp3');
+    this.load.audio('sfx_wind', 'assets/main-menu/audio/wind.mp3');
+    this.load.audio('sfx_torch-up', 'assets/main-menu/audio/torch-up.mp3');
+    this.load.audio('sfx_torch-down', 'assets/main-menu/audio/torch-down.mp3');
+    this.load.audio('sfx_text', 'assets/main-menu/audio/text.mp3');
   }
 
   create() {
@@ -98,6 +108,11 @@ export class MainMenuScene extends Phaser.Scene {
     // === 7. Setup Input Listeners ===
 
     this.cameras.main.fadeIn(800, 0, 0, 0);
+
+    // === 8. bg sounds ===
+
+    this.playSFX('sfx_fire', 1, true);
+    this.playSFX('sfx_wind', 0.1, true);
   }
 
 
@@ -146,5 +161,17 @@ export class MainMenuScene extends Phaser.Scene {
         ease: 'Quad.easeOut',
       });
     });
+    if (this._menuHighlightFirstCall) {
+      this._menuHighlightFirstCall = false;
+    } else {
+      this.playSFX('sfx_hover', 0.8);
+    }
   }
+
+  playSFX(key, volume = 1, loop = false) {
+    const sound = this.sound.add(key, { volume, loop });
+    sound.play();
+    return sound; // optional, if you want to stop it later
+  }
+
 };

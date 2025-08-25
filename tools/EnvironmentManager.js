@@ -4,8 +4,8 @@ export default class EnvironmentManager {
   constructor(phaserScene) {
     this.tree = MENU_TREE;
     this.scene = phaserScene;
-    this.currentNodeId = null;
-    this.history = [];
+    this.currentNodeId = 'root';
+    this.currentNode = this.tree[this.currentNodeId];
     this.pathStack = ["root"];
     this.currentBg = null;
     this.currentMovingPart = null;
@@ -27,6 +27,8 @@ export default class EnvironmentManager {
     // ⬇️ Going deeper (into a child)
     if (currentNode?.children?.includes(nodeId)) {
       this.pathStack.push(nodeId);
+
+      this.scene.playSFX('sfx_select', 0.8);
 
       const skipTransition = nextNode.envType === "inherit";
       if (skipTransition) {
@@ -54,7 +56,7 @@ export default class EnvironmentManager {
       if (currentNode?.exitAnimation) {
         this.transitionAnim(currentNode.exitAnimation, () => {
           this._completeTransition(nextNode, { skipEnterAnim });
-        });
+        }, currentNode.exitSFX);
       } else {
         this._completeTransition(nextNode, { skipEnterAnim });
       }
@@ -100,7 +102,7 @@ export default class EnvironmentManager {
       this.transitionAnim(nextNode.enterAnimation, () => {
         this.applyEnvironment(nextNode);
         if (nextNode.envType !== 'text') this.scene.renderMenuItems();
-      });
+      }, nextNode.enterSFX);
     } else {
       if (!skipEnvUpdate) this.applyEnvironment(nextNode);
       if (nextNode.envType !== 'text') this.scene.renderMenuItems();
@@ -219,7 +221,7 @@ export default class EnvironmentManager {
     this.movingPart = this.scene.add.sprite(x, y, key).play(key);
   }
 
-  transitionAnim(animKey, onComplete) {
+  transitionAnim(animKey, onComplete, sfxKey) {
     if (this.transitionSprite) {
       this.transitionSprite.destroy();
       this.transitionSprite = null;
@@ -241,6 +243,12 @@ export default class EnvironmentManager {
     this.transitionSprite = this.scene.add.sprite(x, y, animKey).setOrigin(0.5);
     this.transitionSprite.play(animKey);
 
+    // ✅ Play sound immediately if provided
+    if (sfxKey && this.scene.playSFX) {
+      this.scene.playSFX(sfxKey, 0.8);  // You can adjust volume
+    }
+
+    // Handle animation complete
     this.transitionSprite.once('animationcomplete', () => {
       this.transitionSprite.destroy();
       this.transitionSprite = null;
@@ -311,7 +319,7 @@ export default class EnvironmentManager {
         const pw = this.currentNode.crop.width;  // 25px padding left+right
         const ph = this.currentNode.crop.height; // 25px padding top+bottom
         this.textState.paperObject = this.scene.add.image(this.currentNode.x - 25, this.currentNode.y - 25, 'paper')
-        .setOrigin(0, 0)
+          .setOrigin(0, 0)
           .setCrop(px, py, pw, ph)
           .setDepth(0);
       }
@@ -327,7 +335,15 @@ export default class EnvironmentManager {
       repeat: fullText.length - 1,
       callback: () => {
         if (!text.active || !text.scene) return; // Prevent crash if destroyed
-        text.text += fullText[i];
+
+        const char = fullText[i];
+        text.text += char;
+
+        // 🔊 Play type sound (skip for spaces/punctuation if you like)
+        if (char === " " || i === fullText.length - 1) {
+          this.scene.playSFX("sfx_text", 0.2);
+        }
+
         i++;
         if (i === fullText.length) {
           this.textState.isAnimating = false;
