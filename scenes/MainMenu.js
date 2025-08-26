@@ -78,13 +78,13 @@ export class MainMenuScene extends Phaser.Scene {
     this.load.image('paper', 'assets/main-menu/paper.png');
 
     // **** Sound Effects ****//
-    this.load.audio('sfx_hover', 'assets/main-menu/audio/hover.mp3');
-    this.load.audio('sfx_select', 'assets/main-menu/audio/select.mp3');
+    this.load.audio('sfx_hover', 'assets/main-menu/audio/hover.wav');
+    this.load.audio('sfx_select', 'assets/main-menu/audio/select.wav');
     this.load.audio('sfx_fire', 'assets/main-menu/audio/fire.mp3');
     this.load.audio('sfx_wind', 'assets/main-menu/audio/wind.mp3');
-    this.load.audio('sfx_torch-up', 'assets/main-menu/audio/torch-up.mp3');
-    this.load.audio('sfx_torch-down', 'assets/main-menu/audio/torch-down.mp3');
-    this.load.audio('sfx_text', 'assets/main-menu/audio/text.mp3');
+    this.load.audio('sfx_torch-up', 'assets/main-menu/audio/torch-up.wav');
+    this.load.audio('sfx_torch-down', 'assets/main-menu/audio/torch-down.wav');
+    this.load.audio('sfx_text', 'assets/main-menu/audio/text.wav');
   }
 
   create() {
@@ -109,7 +109,14 @@ export class MainMenuScene extends Phaser.Scene {
 
     this.cameras.main.fadeIn(800, 0, 0, 0);
 
-    // === 8. bg sounds ===
+    // // === 8. Force decode the audio ===
+    // this.sound.decodeAudio('sfx_hover');
+    // this.sound.decodeAudio('sfx_select');
+    // this.sound.decodeAudio('sfx_text');
+    // this.sound.decodeAudio('sfx_torch-up');
+    // this.sound.decodeAudio('sfx_torch-down');
+
+    // === 9. bg sounds ===
 
     this.playSFX('sfx_fire', 1, true);
     this.playSFX('sfx_wind', 0.1, true);
