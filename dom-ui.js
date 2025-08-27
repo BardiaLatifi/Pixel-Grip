@@ -40,19 +40,35 @@ export function setupJoystick(game) {
 
 export function setupFullscreenToggle() {
   const btn = document.getElementById('full-screen-btn');
-  let pressTimer = null;
+  const overlay = document.getElementById('fullscreen-message');
   const holdTime = 600; // milliseconds to trigger
+  let pressTimer = null;
 
-  if (!btn) return;
+  if (!btn || !overlay) return;
 
   btn.addEventListener('pointerdown', (e) => {
     pressTimer = setTimeout(() => {
       toggleFullscreen();
+      pressTimer = null;
     }, holdTime);
   });
 
-  btn.addEventListener('pointerup', () => clearTimeout(pressTimer));
-  btn.addEventListener('pointerleave', () => clearTimeout(pressTimer));
+  const onPointerUpOrLeave = () => {
+    if (pressTimer) {
+      // user released before holdTime
+      clearTimeout(pressTimer);
+      pressTimer = null;
+      // change overlay src to hint
+      overlay.src = 'assets/ui/hold-it.png';
+      // optional: revert back after short time
+      setTimeout(() => {
+        overlay.src = 'assets/ui/hold-fullscreen.png'; // original src
+      }, 1200);
+    }
+  };
+
+  btn.addEventListener('pointerup', onPointerUpOrLeave);
+  btn.addEventListener('pointerleave', onPointerUpOrLeave);
 }
 
 function toggleFullscreen() {
