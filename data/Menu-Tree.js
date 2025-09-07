@@ -6,7 +6,7 @@ export const MENU_TREE = {
     background: 'background-root',
     movingPart: {
       key: 'fire-root',
-      anim: 'fire-root', // ✅ You were missing this
+      anim: 'fire-root',
       x: 206,
       y: 168,
       config: { start: 0, end: 23, frameRate: 10, loop: true }
@@ -17,12 +17,37 @@ export const MENU_TREE = {
 
   play: {
     id: 'play',
+    type: 'menu',
+    envType: 'text',
+    parent: 'root',
+    x: 60,
+    y: 45,
+    fontSize: '16px',
+    fontFamily: '"Cormorant Garamond", serif',
+    fill: 'black',
+    crop: {
+      width: 570,
+      height: 315
+    },
+    textSequence: [
+      "Hey there! Thanks for checking out the Play menu.\n\nI have to be honest with you... \n\n the actual game isn’t ready just yet.",
+      "Pixel Grip is still in its very early stages. \n\n think of this as the foundation work. \n\n Right now, most of my focus is on building the console-style UI \n\n and the main menu system.",
+      "The fun stuff is definitely coming! \n\n My plan is to add some engaging mini-games \n\n and interactive features as the project grows.",
+      "This is a long-term journey, \n\n so what you’re seeing now is just the starting point. \n\n If you’re curious, stick around and watch how \n\n Pixel Grip evolves over time!"
+    ]
+
+  },
+
+  /* this item is not active right now
+  play: {
+    id: 'play',
     type: 'action',
     parent: 'root',
     background: 'background-play',
     menuItems: [],
     children: []
   },
+  */
 
   options: {
     id: 'options',
@@ -98,7 +123,6 @@ export const MENU_TREE = {
     menuItems: ['Project Info', 'Grip Guide']
   },
 
-  // why these two are like that?! why they are strings as key?
   'project-info': {
     id: 'project-info',
     type: 'menu',
