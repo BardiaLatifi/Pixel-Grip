@@ -42,7 +42,19 @@ export const DisplayManager = {
     this.toggleOverlay(this.rotateImage, rotateVisible);
     this.toggleOverlay(this.fullscreenImage, fullscreenVisible);
 
-    // Ready trigger (only when display is in good state)
+    // 🔊 Control sounds depending on state
+    const scene = this.game.scene.getScene(this.currentSceneKey);
+    if (scene && scene.sound) {
+      if (rotateVisible || fullscreenVisible) {
+        // bad state → pause all
+        scene.sound.pauseAll();
+      } else {
+        // good state → resume all
+        scene.sound.resumeAll();
+      }
+    }
+
+    // Trigger ready callback (only once when display is in good state)
     if (!rotateVisible && !fullscreenVisible && this.onReadyCallback) {
       this.onReadyCallback();
       this.onReadyCallback = null;

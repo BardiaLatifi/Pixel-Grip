@@ -62,6 +62,12 @@ export class Initialization extends Phaser.Scene {
     this.load.image('paper', 'assets/main-menu/paper.png');
 
     // **** Sound Effects ****//
+
+    // Boot Scene
+    this.load.audio('sfx_intro', 'assets/boot/audio/intro.mp3');
+    this.load.audio('sfx_accept', 'assets/boot/audio/accept.mp3');
+
+    // Main Menu Scene
     this.load.audio('sfx_hover', 'assets/main-menu/audio/hover.wav');
     this.load.audio('sfx_select', 'assets/main-menu/audio/select.wav');
     this.load.audio('sfx_fire', 'assets/main-menu/audio/fire.mp3');

@@ -5,11 +5,6 @@ export class BootScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.spritesheet('background', 'assets/main-menu/background-sheet.png', {
-      frameWidth: 640,
-      frameHeight: 360
-    });
-
     // Optionally load a click sound or menu move sound here
   }
 
@@ -39,6 +34,8 @@ export class BootScene extends Phaser.Scene {
             ease: 'Sine.easeOut',
             onComplete: () => {
               // === Step 3: Fade in your logo ===
+              // Intro sound 
+              this.playSFX('sfx_intro', 0.1, false);
               this.tweens.add({
                 targets: this.pgLogo,
                 alpha: 1,
@@ -111,6 +108,8 @@ export class BootScene extends Phaser.Scene {
     const handleHold = () => {
       if (!this.optionButtonHeld) {
         this.optionButtonHeld = true;
+        // play accept sound
+        this.playSFX('sfx_accept', 1, false);
 
         this.stopBlinking(this.pressPrompt);
 
@@ -145,5 +144,11 @@ export class BootScene extends Phaser.Scene {
       btn.removeEventListener('mousedown', handleHold);
       btn.removeEventListener('touchstart', handleHold);
     });
+  }
+
+  playSFX(key, volume = 1, loop = false) {
+    const sound = this.sound.add(key, { volume, loop });
+    sound.play();
+    return sound; // optional, if you want to stop it later
   }
 }
