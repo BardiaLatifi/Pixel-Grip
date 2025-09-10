@@ -80,11 +80,18 @@ export class MainMenuScene extends Phaser.Scene {
 
     // 1. Re-fetch the menu labels
     this.menuItems = MENU_TREE[this.currentNodeId].menuItems;
+    const itemCount = this.menuItems.length;
 
-    // 2. Re-create text objects
+    // 2. Calculate vertical offset
+    const baseY = 180;
+    const spacing = 40;
+    const offset = itemCount > 3 ? (itemCount - 3) * 25 : 0;
+    const startY = baseY - offset;
+
+    // 3. Re-create text objects
     this.menuTexts = this.menuItems.map((label, index) => {
       const isSelected = index === this.currentIndex;
-      const text = this.add.text(320, 180 + index * 40, label, {
+      const text = this.add.text(320, startY + index * spacing, label, {
         fontFamily: 'sans-serif',
         fontSize: '24px',
         color: isSelected ? '#fff' : '#999',
@@ -92,7 +99,7 @@ export class MainMenuScene extends Phaser.Scene {
 
       text.setScale(isSelected ? 1 : 0.85);
       text.setAlpha(isSelected ? 1 : 0.75);
-      text.setDepth(1); // ✅ Put on top of background!
+      text.setDepth(1); // ✅ Ensure it’s above background
 
       return text;
     });

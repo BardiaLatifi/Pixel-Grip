@@ -1,4 +1,5 @@
 import { MENU_TREE } from '../data/Menu-Tree.js';
+import { AudioSystem } from './AudioSystem.js';
 
 
 export function inputHandlers(scene) {
@@ -68,7 +69,6 @@ export function inputHandlers(scene) {
 
   // button1 = Enter submenu or run action / forward text
   actionButton(button1, () => {
-
     // scene.playSFX('sfx_select', 0.8);
 
     const envManager = scene.environmentManager;
@@ -84,18 +84,27 @@ export function inputHandlers(scene) {
 
     const selectedChildId = currentNode.children?.[scene.currentIndex];
     if (selectedChildId) {
-      envManager.goTo(selectedChildId);
-      scene.currentNodeId = selectedChildId;
-      scene.currentIndex = 0;
+      const childNode = MENU_TREE[selectedChildId];
 
-      // 🔹 Only render menu if the target node is NOT a text node
-      if (!MENU_TREE[selectedChildId]?.envType || MENU_TREE[selectedChildId].envType !== 'text') {
-        scene.renderMenuItems();
+      if (childNode.type === 'option') {
+        // --- Trigger centralized AudioSystem function ---
+        AudioSystem(scene, childNode);
+      } else {
+        // Old behavior: go to submenu or text node
+        envManager.goTo(selectedChildId);
+        scene.currentNodeId = selectedChildId;
+        scene.currentIndex = 0;
+
+        // 🔹 Only render menu if the target node is NOT a text node
+        if (!MENU_TREE[selectedChildId]?.envType || MENU_TREE[selectedChildId].envType !== 'text') {
+          scene.renderMenuItems();
+        }
       }
     } else {
       console.log(`Selected action: ${currentNode.menuItems[scene.currentIndex]}`);
     }
   });
+
 
 
   // button2 = Go Back to parent / back text

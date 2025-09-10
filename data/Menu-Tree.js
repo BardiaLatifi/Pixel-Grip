@@ -33,7 +33,8 @@ export const MENU_TREE = {
       "Hey there! Thanks for checking out the Play menu.\n\nI have to be honest with you... \n\n the actual game isn’t ready just yet.",
       "Pixel Grip is still in its very early stages. \n\n think of this as the foundation work. \n\n Right now, most of my focus is on building the console-style UI \n\n and the main menu system.",
       "The fun stuff is definitely coming! \n\n My plan is to add some engaging mini-games \n\n and interactive features as the project grows.",
-      "This is a long-term journey, \n\n so what you’re seeing now is just the starting point. \n\n If you’re curious, stick around and watch how \n\n Pixel Grip evolves over time!"
+      "This is a long-term journey, \n\n so what you’re seeing now is just the starting point. \n\n If you’re curious, stick around and watch how \n\n Pixel Grip evolves over time!",
+      "There’s also some extra info about the project \n\n in the About menu — feel free to check it out!"
     ]
 
   },
@@ -83,9 +84,67 @@ export const MENU_TREE = {
     envType: 'inherit',
     parent: 'options',
     background: 'background-audio',
-    menuItems: [],
-    children: []
+    menuItems: [
+      'Mute UI Sound: OFF',
+      'Mute Environment: OFF',
+      'Background Music: OFF',
+      'Sound Pack: SP1',
+      'Reset Default'
+    ],
+    children: ['mute_ui', 'mute_env', 'music', 'sound_pack', 'reset_audio']
   },
+
+  mute_ui: {
+    id: 'mute_ui',
+    type: 'option',      // now an option
+    action: 'toggle',    // toggles boolean
+    parent: 'audio',
+    label: 'Mute UI Sound',
+    value: false
+  },
+
+  mute_env: {
+    id: 'mute_env',
+    type: 'option',
+    action: 'toggle',
+    parent: 'audio',
+    label: 'Mute Environment',
+    value: false
+  },
+
+  music: {
+    id: 'music',
+    type: 'option',
+    action: 'selector',  // cycles through options
+    parent: 'audio',
+    label: 'Background Music',
+    options: ['OFF', 'Track 1', 'Track 2'],
+    currentIndex: 0
+  },
+
+  sound_pack: {
+    id: 'sound_pack',
+    type: 'option',
+    action: 'selector',
+    parent: 'audio',
+    label: 'Sound Pack',
+    options: ['SP1', 'SP2', 'SP3'],
+    currentIndex: 0,
+    srcs: [  // needed for AudioSystem to pick hover/select/text sounds
+      { hover: 'classic_hover', select: 'classic_select', text: 'classic_text' },
+      { hover: 'soft_hover', select: 'soft_select', text: 'soft_text' },
+      { hover: 'retro_hover', select: 'retro_select', text: 'retro_text' }
+    ]
+  },
+
+  reset_audio: {
+    id: 'reset_audio',
+    type: 'option',
+    action: 'action',    // special function
+    parent: 'audio',
+    label: 'Reset Default'
+  },
+
 
   controls: {
     id: 'controls',
