@@ -85,39 +85,19 @@ export const MENU_TREE = {
     parent: 'options',
     background: 'background-audio',
     menuItems: [
-      'Mute UI Sound: OFF',
-      'Mute Environment: OFF',
-      'Background Music: OFF',
+      'Music: OFF',
       'Sound Pack: SP1',
+      'Mute: OFF',
       'Reset Default'
     ],
-    children: ['mute_ui', 'mute_env', 'music', 'sound_pack', 'reset_audio']
-  },
-
-  mute_ui: {
-    id: 'mute_ui',
-    type: 'option',      // now an option
-    action: 'toggle',    // toggles boolean
-    parent: 'audio',
-    label: 'Mute UI Sound',
-    value: false
-  },
-
-  mute_env: {
-    id: 'mute_env',
-    type: 'option',
-    action: 'toggle',
-    parent: 'audio',
-    label: 'Mute Environment',
-    value: false
+    children: ['music', 'sound_pack', 'mute_mode', 'reset_audio']
   },
 
   music: {
     id: 'music',
     type: 'option',
-    action: 'selector',  // cycles through options
     parent: 'audio',
-    label: 'Background Music',
+    label: 'Music',
     options: ['OFF', 'Track 1', 'Track 2'],
     currentIndex: 0
   },
@@ -125,7 +105,6 @@ export const MENU_TREE = {
   sound_pack: {
     id: 'sound_pack',
     type: 'option',
-    action: 'selector',
     parent: 'audio',
     label: 'Sound Pack',
     options: ['SP1', 'SP2', 'SP3'],
@@ -137,14 +116,21 @@ export const MENU_TREE = {
     ]
   },
 
+  mute_mode: {
+    id: 'mute_mode',
+    type: 'option',
+    parent: 'audio',
+    label: 'Mute',
+    options: ['OFF', 'UI', 'Environment', 'All'],
+    currentIndex: 0
+  },
+
   reset_audio: {
     id: 'reset_audio',
     type: 'option',
-    action: 'action',    // special function
     parent: 'audio',
     label: 'Reset Default'
   },
-
 
   controls: {
     id: 'controls',
