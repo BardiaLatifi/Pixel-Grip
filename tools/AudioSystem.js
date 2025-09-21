@@ -28,7 +28,7 @@ export function AudioSystem(scene, childNode) {
     if (scene.currentMusic) scene.currentMusic.stop();
     scene.currentMusic = null;
 
-    // Reset sound pack
+    // Reset sound pack to default
     const defaultPack = MENU_TREE['sound_pack'].srcs[0];
     scene.hoverSFX = defaultPack.hover;
     scene.selectSFX = defaultPack.select;
@@ -42,13 +42,30 @@ export function AudioSystem(scene, childNode) {
     // Cycle to next option
     childNode.currentIndex = (childNode.currentIndex + 1) % childNode.options.length;
 
-    // Handle selector effects
     if (childNode.id === 'mute_mode') {
       const mode = childNode.options[childNode.currentIndex];
+
+      // Reset all flags
+      scene.isMutedUI = false;
+      scene.isMutedEnv = false;
+      scene.isMutedAll = false;
+
+      if (mode === 'UI') {
+        scene.isMutedUI = true;
+      } else if (mode === 'Environment') {
+        scene.isMutedEnv = true;
+      } else if (mode === 'All') {
+        scene.isMutedAll = true;
+      }
+
+      // Handle existing sounds
       scene.sound.getAll().forEach(s => {
-        if (mode === 'UI' && (s.key.includes('sfx_hover') || s.key.includes('sfx_select') || s.key.includes('sfx_text'))) {
+        // 🔊 Skip currentMusic here, we’ll handle separately
+        if (scene.currentMusic && s.key === scene.currentMusic.key) return;
+
+        if (mode === 'UI' && (s.key.includes('hover') || s.key.includes('select') || s.key.includes('text'))) {
           s.setMute(true);
-        } else if (mode === 'Environment' && (s.key.includes('sfx_fire') || s.key.includes('sfx_wind'))) {
+        } else if (mode === 'Environment' && (s.key.includes('fire') || s.key.includes('wind'))) {
           s.setMute(true);
         } else if (mode === 'All') {
           s.setMute(true);
@@ -56,7 +73,22 @@ export function AudioSystem(scene, childNode) {
           s.setMute(false);
         }
       });
+
+      // 🎵 Handle music separately
+      if (scene.currentMusic) {
+        if (mode === 'All') {
+          scene.currentMusic.setMute(true);
+        } else {
+          scene.currentMusic.setMute(false);
+
+          // Auto-play if coming back from mute
+          if (!scene.currentMusic.isPlaying) {
+            scene.currentMusic.play();
+          }
+        }
+      }
     }
+
 
     if (childNode.id === 'sound_pack') {
       const pack = childNode.srcs[childNode.currentIndex];
@@ -68,13 +100,19 @@ export function AudioSystem(scene, childNode) {
     if (childNode.id === 'music') {
       const track = childNode.options[childNode.currentIndex];
       if (scene.currentMusic) scene.currentMusic.stop();
+
       if (track !== 'OFF') {
-        scene.currentMusic = scene.sound.add(track, { volume: 0.3, loop: true });
-        scene.currentMusic.play();
+        scene.currentMusic = scene.sound.add(track, { volume: 0.1, loop: true });
+
+        // 🔇 Respect mute-all
+        if (!scene.isMutedAll) {
+          scene.currentMusic.play();
+        }
       } else {
         scene.currentMusic = null;
       }
     }
+
 
     rebuildMenuLabel(childNode);
   }

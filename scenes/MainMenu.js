@@ -2,6 +2,8 @@
 import { MENU_TREE } from '../data/Menu-Tree.js';
 import EnvironmentManager from '../tools/EnvironmentManager.js';
 import { inputHandlers } from '../tools/InputHandlers.js';
+import { AudioSystem } from '../tools/AudioSystem.js';
+
 
 
 export class MainMenuScene extends Phaser.Scene {
@@ -53,12 +55,15 @@ export class MainMenuScene extends Phaser.Scene {
 
     this.cameras.main.fadeIn(800, 0, 0, 0);
 
-    // // === 8. Force decode the audio ===
-    // this.sound.decodeAudio('sfx_hover');
-    // this.sound.decodeAudio('sfx_select');
-    // this.sound.decodeAudio('sfx_text');
-    // this.sound.decodeAudio('sfx_torch-up');
-    // this.sound.decodeAudio('sfx_torch-down');
+    // // === 8. Define default Sound Pack ===
+
+    const defaultPackNode = MENU_TREE['sound_pack'];
+    defaultPackNode.currentIndex = 0;
+    const pack = defaultPackNode.srcs[defaultPackNode.currentIndex];
+    this.hoverSFX = pack.hover;
+    this.selectSFX = pack.select;
+    this.textSFX = pack.text;
+
 
     // === 9. bg sounds ===
 
@@ -122,14 +127,29 @@ export class MainMenuScene extends Phaser.Scene {
     if (this._menuHighlightFirstCall) {
       this._menuHighlightFirstCall = false;
     } else {
-      this.playSFX('sfx_hover', 0.8);
+      this.playSFX(this.hoverSFX, 0.8);
     }
   }
 
   playSFX(key, volume = 1, loop = false) {
+    // 🔇 Check mute flags before playing
+    if (this.isMutedAll) return null;
+
+    // If it's a UI sound and UI mute is on, block it
+    if (this.isMutedUI && (key.includes('hover') || key.includes('select') || key.includes('text'))) {
+      return null;
+    }
+
+    // If it's an environment sound and env mute is on, block it
+    if (this.isMutedEnv && (key.includes('fire') || key.includes('wind'))) {
+      return null;
+    }
+
+    // Otherwise, play it
     const sound = this.sound.add(key, { volume, loop });
     sound.play();
-    return sound; // optional, if you want to stop it later
+    return sound;
   }
+
 
 };

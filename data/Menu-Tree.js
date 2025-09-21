@@ -86,7 +86,7 @@ export const MENU_TREE = {
     background: 'background-audio',
     menuItems: [
       'Music: OFF',
-      'Sound Pack: SP1',
+      'Sound Pack: Blacksmith-1',
       'Mute: OFF',
       'Reset Default'
     ],
@@ -98,7 +98,7 @@ export const MENU_TREE = {
     type: 'option',
     parent: 'audio',
     label: 'Music',
-    options: ['OFF', 'Track 1', 'Track 2'],
+    options: ['OFF', 'Track-1', 'Track-2', 'Track-3'],
     currentIndex: 0
   },
 
@@ -107,12 +107,15 @@ export const MENU_TREE = {
     type: 'option',
     parent: 'audio',
     label: 'Sound Pack',
-    options: ['SP1', 'SP2', 'SP3'],
+    options: ['Blacksmith-1', 'Blacksmith-2', 'Fight-1', 'Fight-2', 'Digital-1', 'Digital-2',],
     currentIndex: 0,
-    srcs: [  // needed for AudioSystem to pick hover/select/text sounds
-      { hover: 'classic_hover', select: 'classic_select', text: 'classic_text' },
-      { hover: 'soft_hover', select: 'soft_select', text: 'soft_text' },
-      { hover: 'retro_hover', select: 'retro_select', text: 'retro_text' }
+    srcs: [
+      { hover: 'hammer1_hover', select: 'hammer1_select', text: 'hammer1_text' },
+      { hover: 'hammer2_hover', select: 'hammer2_select', text: 'hammer2_text' },
+      { hover: 'fight1_hover', select: 'fight1_select', text: 'fight1_text' },
+      { hover: 'fight2_hover', select: 'fight2_select', text: 'fight2_text' },
+      { hover: 'digital1_hover', select: 'digital1_select', text: 'digital1_text' },
+      { hover: 'digital2_hover', select: 'digital2_select', text: 'digital2_text' }
     ]
   },
 

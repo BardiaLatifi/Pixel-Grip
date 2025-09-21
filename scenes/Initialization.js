@@ -67,14 +67,42 @@ export class Initialization extends Phaser.Scene {
     this.load.audio('sfx_intro', 'assets/boot/audio/intro.mp3');
     this.load.audio('sfx_accept', 'assets/boot/audio/accept.mp3');
 
-    // Main Menu Scene
-    this.load.audio('sfx_hover', 'assets/main-menu/audio/hover.wav');
-    this.load.audio('sfx_select', 'assets/main-menu/audio/select.wav');
+    // UI Sound Packs
+
+    this.load.audio('hammer1_hover', 'assets/main-menu/audio/hammer-1/hover.wav');
+    this.load.audio('hammer1_select', 'assets/main-menu/audio/hammer-1/select.wav');
+    this.load.audio('hammer1_text', 'assets/main-menu/audio/hammer-1/text.wav');
+
+    this.load.audio('hammer2_hover', 'assets/main-menu/audio/hammer-2/hover.wav');
+    this.load.audio('hammer2_select', 'assets/main-menu/audio/hammer-2/select.wav');
+    this.load.audio('hammer2_text', 'assets/main-menu/audio/hammer-2/text.wav');
+
+    this.load.audio('digital1_hover', 'assets/main-menu/audio/digital-1/hover.wav');
+    this.load.audio('digital1_select', 'assets/main-menu/audio/digital-1/select.wav');
+    this.load.audio('digital1_text', 'assets/main-menu/audio/digital-1/text.wav');
+
+    this.load.audio('digital2_hover', 'assets/main-menu/audio/digital-2/hover.wav');
+    this.load.audio('digital2_select', 'assets/main-menu/audio/digital-2/select.wav');
+    this.load.audio('digital2_text', 'assets/main-menu/audio/digital-2/text.wav');
+
+    this.load.audio('fight1_hover', 'assets/main-menu/audio/fight-1/hover.wav');
+    this.load.audio('fight1_select', 'assets/main-menu/audio/fight-1/select.wav');
+    this.load.audio('fight1_text', 'assets/main-menu/audio/fight-1/text.wav');
+
+    this.load.audio('fight2_hover', 'assets/main-menu/audio/fight-2/hover.wav');
+    this.load.audio('fight2_select', 'assets/main-menu/audio/fight-2/select.wav');
+    this.load.audio('fight2_text', 'assets/main-menu/audio/fight-2/text.wav');
+
+    // Environment
     this.load.audio('sfx_fire', 'assets/main-menu/audio/fire.mp3');
     this.load.audio('sfx_wind', 'assets/main-menu/audio/wind.mp3');
     this.load.audio('sfx_torch-up', 'assets/main-menu/audio/torch-up.wav');
     this.load.audio('sfx_torch-down', 'assets/main-menu/audio/torch-down.wav');
-    this.load.audio('sfx_text', 'assets/main-menu/audio/text.wav');
+
+    // Musics
+    this.load.audio('Track-1', 'assets/main-menu/audio/music/dramatic-cello.mp3');
+    this.load.audio('Track-2', 'assets/main-menu/audio/music/one-eyed-salmon.mp3');
+    this.load.audio('Track-3', 'assets/main-menu/audio/music/the-star-of-the-county-down.mp3');
   }
 
   create() {

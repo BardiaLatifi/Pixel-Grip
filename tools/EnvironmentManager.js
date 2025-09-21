@@ -28,7 +28,7 @@ export default class EnvironmentManager {
     if (currentNode?.children?.includes(nodeId)) {
       this.pathStack.push(nodeId);
 
-      this.scene.playSFX('sfx_select', 0.8);
+      this.scene.playSFX(this.scene.selectSFX, 0.8);
 
       const skipTransition = nextNode.envType === "inherit";
       if (skipTransition) {
@@ -341,7 +341,7 @@ export default class EnvironmentManager {
 
         // 🔊 Play type sound (skip for spaces/punctuation if you like)
         if (char === " " || i === fullText.length - 1) {
-          this.scene.playSFX("sfx_text", 0.2);
+          this.scene.playSFX(this.scene.textSFX, 0.5);
         }
 
         i++;
