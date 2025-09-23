@@ -28,7 +28,9 @@ export default class EnvironmentManager {
     if (currentNode?.children?.includes(nodeId)) {
       this.pathStack.push(nodeId);
 
-      this.scene.playSFX(this.scene.selectSFX, 0.8);
+      if (nextNode.id !== 'options') {
+        this.scene.playSFX(this.scene.selectSFX, 0.8);
+      }
 
       const skipTransition = nextNode.envType === "inherit";
       if (skipTransition) {
@@ -48,6 +50,10 @@ export default class EnvironmentManager {
 
     if (goingBack) {
       this.pathStack.pop();
+
+      if (currentNode.id !== 'options') {
+        this.scene.playSFX(this.scene.backSFX, 0.8);
+      }
 
       // Skip enter anim for parent if current (child) was 'inherit'
       const skipEnterAnim = currentNode?.envType === "inherit" || currentNode?.envType === "text";

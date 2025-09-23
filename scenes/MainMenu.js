@@ -2,7 +2,6 @@
 import { MENU_TREE } from '../data/Menu-Tree.js';
 import EnvironmentManager from '../tools/EnvironmentManager.js';
 import { inputHandlers } from '../tools/InputHandlers.js';
-import { AudioSystem } from '../tools/AudioSystem.js';
 
 
 
@@ -26,6 +25,13 @@ export class MainMenuScene extends Phaser.Scene {
 
     // to prevent first sound trigger
     this._menuHighlightFirstCall = true;
+
+    // Default volume categories
+    this.volumeSettings = {
+      music: 0.25,
+      environment: 1,
+      ui: 0.75,
+    };
   }
 
 
@@ -62,6 +68,7 @@ export class MainMenuScene extends Phaser.Scene {
     const pack = defaultPackNode.srcs[defaultPackNode.currentIndex];
     this.hoverSFX = pack.hover;
     this.selectSFX = pack.select;
+    this.backSFX = pack.back;
     this.textSFX = pack.text;
 
 
@@ -132,24 +139,33 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   playSFX(key, volume = 1, loop = false) {
-    // 🔇 Check mute flags before playing
-    if (this.isMutedAll) return null;
+    // Decide category volume
+    let categoryVolume = 1;
 
-    // If it's a UI sound and UI mute is on, block it
-    if (this.isMutedUI && (key.includes('hover') || key.includes('select') || key.includes('text'))) {
-      return null;
+    if (key.includes('hover') || key.includes('select') || key.includes('back') || key.includes('text')) {
+      categoryVolume = this.volumeSettings?.ui ?? 1;
+    } else if (key.includes('fire') || key.includes('wind')) {
+      categoryVolume = this.volumeSettings?.environment ?? 1;
+    } else {
+      categoryVolume = this.volumeSettings?.ui ?? 1; // fallback
     }
 
-    // If it's an environment sound and env mute is on, block it
-    if (this.isMutedEnv && (key.includes('fire') || key.includes('wind'))) {
-      return null;
-    }
+    // Final volume
+    const finalVolume = volume * categoryVolume;
+    if (finalVolume <= 0) return null;
 
-    // Otherwise, play it
-    const sound = this.sound.add(key, { volume, loop });
+    const sound = this.sound.add(key, { volume: finalVolume, loop });
+
+    // remember base volume & category so we can update later
+    sound._baseVolume = volume;
+    sound._category = (key.includes('fire') || key.includes('wind'))
+      ? 'environment'
+      : (key.includes('hover') || key.includes('select') || key.includes('back') || key.includes('text'))
+        ? 'ui'
+        : 'other';
+
     sound.play();
     return sound;
   }
-
 
 };

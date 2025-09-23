@@ -87,10 +87,10 @@ export const MENU_TREE = {
     menuItems: [
       'Music: OFF',
       'Sound Pack: Blacksmith-1',
-      'Mute: OFF',
+      'Volume',
       'Reset Default'
     ],
-    children: ['music', 'sound_pack', 'mute_mode', 'reset_audio']
+    children: ['music', 'sound_pack', 'volume', 'reset_audio']
   },
 
   music: {
@@ -110,22 +110,55 @@ export const MENU_TREE = {
     options: ['Blacksmith-1', 'Blacksmith-2', 'Fight-1', 'Fight-2', 'Digital-1', 'Digital-2',],
     currentIndex: 0,
     srcs: [
-      { hover: 'hammer1_hover', select: 'hammer1_select', text: 'hammer1_text' },
-      { hover: 'hammer2_hover', select: 'hammer2_select', text: 'hammer2_text' },
-      { hover: 'fight1_hover', select: 'fight1_select', text: 'fight1_text' },
-      { hover: 'fight2_hover', select: 'fight2_select', text: 'fight2_text' },
-      { hover: 'digital1_hover', select: 'digital1_select', text: 'digital1_text' },
-      { hover: 'digital2_hover', select: 'digital2_select', text: 'digital2_text' }
+      { hover: 'hammer1_hover', select: 'hammer1_select', back: 'hammer1_back', text: 'hammer1_text' },
+      { hover: 'hammer2_hover', select: 'hammer2_select', back: 'hammer2_back', text: 'hammer2_text' },
+      { hover: 'fight1_hover', select: 'fight1_select', back: 'fight1_back', text: 'fight1_text' },
+      { hover: 'fight2_hover', select: 'fight2_select', back: 'fight2_back', text: 'fight2_text' },
+      { hover: 'digital1_hover', select: 'digital1_select', back: 'digital1_back', text: 'digital1_text' },
+      { hover: 'digital2_hover', select: 'digital2_select', back: 'digital2_back', text: 'digital2_text' }
     ]
   },
 
-  mute_mode: {
-    id: 'mute_mode',
-    type: 'option',
+  volume: {
+    id: 'volume',
+    type: 'menu',
+    envType: 'inherit', // seamless like audio
     parent: 'audio',
-    label: 'Mute',
-    options: ['OFF', 'UI', 'Environment', 'All'],
-    currentIndex: 0
+    label: 'Music',
+    background: 'background-audio', // reuse same bg for seamless look
+    menuItems: [
+      'Music: 25%',
+      'Environment: 100%',
+      'UI: 75%'
+    ],
+    children: ['music_volume', 'environment_volume', 'ui_volume']
+  },
+
+  music_volume: {
+    id: 'music_volume',
+    type: 'option',
+    parent: 'volume',
+    label: 'Music',
+    options: ['Mute', '25%', '50%', '75%', '100%'],
+    currentIndex: 1 // default 50%
+  },
+
+  environment_volume: {
+    id: 'environment_volume',
+    type: 'option',
+    parent: 'volume',
+    label: 'Environment',
+    options: ['Mute', '25%', '50%', '75%', '100%'],
+    currentIndex: 4 // default 100%
+  },
+
+  ui_volume: {
+    id: 'ui_volume',
+    type: 'option',
+    parent: 'volume',
+    label: 'UI',
+    options: ['Mute', '25%', '50%', '75%', '100%'],
+    currentIndex: 3 // default 75%
   },
 
   reset_audio: {

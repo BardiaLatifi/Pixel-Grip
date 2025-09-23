@@ -71,26 +71,32 @@ export class Initialization extends Phaser.Scene {
 
     this.load.audio('hammer1_hover', 'assets/main-menu/audio/hammer-1/hover.wav');
     this.load.audio('hammer1_select', 'assets/main-menu/audio/hammer-1/select.wav');
+    this.load.audio('hammer1_back', 'assets/main-menu/audio/hammer-1/back.wav');
     this.load.audio('hammer1_text', 'assets/main-menu/audio/hammer-1/text.wav');
 
     this.load.audio('hammer2_hover', 'assets/main-menu/audio/hammer-2/hover.wav');
     this.load.audio('hammer2_select', 'assets/main-menu/audio/hammer-2/select.wav');
+    this.load.audio('hammer2_back', 'assets/main-menu/audio/hammer-2/back.wav');
     this.load.audio('hammer2_text', 'assets/main-menu/audio/hammer-2/text.wav');
 
     this.load.audio('digital1_hover', 'assets/main-menu/audio/digital-1/hover.wav');
     this.load.audio('digital1_select', 'assets/main-menu/audio/digital-1/select.wav');
+    this.load.audio('digital1_back', 'assets/main-menu/audio/digital-1/back.wav');
     this.load.audio('digital1_text', 'assets/main-menu/audio/digital-1/text.wav');
 
     this.load.audio('digital2_hover', 'assets/main-menu/audio/digital-2/hover.wav');
     this.load.audio('digital2_select', 'assets/main-menu/audio/digital-2/select.wav');
+    this.load.audio('digital2_back', 'assets/main-menu/audio/digital-2/back.wav');
     this.load.audio('digital2_text', 'assets/main-menu/audio/digital-2/text.wav');
 
     this.load.audio('fight1_hover', 'assets/main-menu/audio/fight-1/hover.wav');
     this.load.audio('fight1_select', 'assets/main-menu/audio/fight-1/select.wav');
+    this.load.audio('fight1_back', 'assets/main-menu/audio/fight-1/back.wav');
     this.load.audio('fight1_text', 'assets/main-menu/audio/fight-1/text.wav');
 
     this.load.audio('fight2_hover', 'assets/main-menu/audio/fight-2/hover.wav');
     this.load.audio('fight2_select', 'assets/main-menu/audio/fight-2/select.wav');
+    this.load.audio('fight2_back', 'assets/main-menu/audio/fight-2/back.wav');
     this.load.audio('fight2_text', 'assets/main-menu/audio/fight-2/text.wav');
 
     // Environment
