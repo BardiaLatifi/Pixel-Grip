@@ -124,7 +124,7 @@ export const MENU_TREE = {
     type: 'menu',
     envType: 'inherit', // seamless like audio
     parent: 'audio',
-    label: 'Music',
+    label: 'Volume',
     background: 'background-audio', // reuse same bg for seamless look
     menuItems: [
       'Music: 25%',
