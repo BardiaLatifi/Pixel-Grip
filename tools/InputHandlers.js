@@ -134,6 +134,19 @@ export function inputHandlers(scene) {
     }
   });
 
+  // button3 = Toggle language
+  actionButton(button3, () => {
+    const envManager = scene.environmentManager;
+    if (!envManager || !envManager.textState) return;
+
+    envManager.currentLanguage = (envManager.currentLanguage === 'en') ? 'fa' : 'en';
+
+    button3.innerHTML = envManager.currentLanguage.toUpperCase(); // 🔹 Update label
+
+    envManager._showTextLine();
+  });
+
+
   // Flags
   if (sceneKey === 'MainMenuScene') {
     // 1. UI Mode: Show D-Pad, Hide Joystick
@@ -145,6 +158,5 @@ export function inputHandlers(scene) {
     button2.innerHTML = '<i class="fa-solid fa-xmark"></i>';
     button1.querySelector('i').style.setProperty('font-size', '1.5rem', 'important');
     button2.querySelector('i').style.setProperty('font-size', '2rem', 'important');
-    button3.style.display = 'none';
   }
 }

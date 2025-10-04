@@ -10,6 +10,7 @@ export default class EnvironmentManager {
     this.currentBg = null;
     this.currentMovingPart = null;
     this.isTransitioning = false;
+    this.currentLanguage = 'en';
   }
 
   setScene(scene) {
@@ -118,11 +119,12 @@ export default class EnvironmentManager {
   applyEnvironment(node) {
     if (!node) return;
 
-    if (node.envType === 'inherit') {
-      console.log(`EnvironmentManager: '${node.id}' inherits environment — skipping environment update.`);
-      return;
+    if (node.envType === 'text') {
+      button3.style.display = 'block';
+      button3.innerHTML = 'EN';   // 🔹 default
+    } else {
+      button3.style.display = 'none';
     }
-
 
     if (node.envType !== 'inherit' && node.envType !== 'text') {
       this.clearEnv();
@@ -297,33 +299,29 @@ export default class EnvironmentManager {
     const { index, sequence } = this.textState;
     if (index >= sequence.length) return;
 
-    const line = sequence[index];
-
     // Destroy old text
-    if (this.textState.textObject) this.textState.textObject.destroy();
+    if (this.textState.textObject) {
+      this.textState.textObject.destroy();
+      this.textState.textObject = null;
+    }
 
-    // ----- STYLE -----
+    // ----- STYLE (base) -----
     const style = {
-      fontSize: this.currentNode.fontSize,
-      fontFamily: this.currentNode.fontFamily,
+      fontSize: this.currentLanguage === 'fa' ? '16px' : '19px',
+      fontFamily: this.currentLanguage === 'fa' ? 'Vazirmatn' : 'EB Garamond',
+      fontWeight: this.currentLanguage === 'fa' ? '400' : '800',
       fill: this.currentNode.fill,
-      wordWrap: { width: this.currentNode.crop.width, useAdvancedWrap: true }
+      wordWrap: { width: this.currentNode.crop?.width || 0, useAdvancedWrap: true }
     };
 
-    // ----- TEXT POSITION -----
-    const x = this.currentNode.x;
-    const y = this.currentNode.y;
 
-    const text = this.scene.add.text(x, y, '', style);
-    this.textState.textObject = text;
-
-    // ----- PAPER BACKGROUND -----
+    // ----- PAPER BACKGROUND (create BEFORE text so we can compute edges) -----
     if (this.currentNode.crop) {
       if (!this.textState.paperObject) {
         const px = 0;
         const py = 0;
-        const pw = this.currentNode.crop.width;  // 25px padding left+right
-        const ph = this.currentNode.crop.height; // 25px padding top+bottom
+        const pw = this.currentNode.crop.width;
+        const ph = this.currentNode.crop.height;
         this.textState.paperObject = this.scene.add.image(this.currentNode.x - 25, this.currentNode.y - 25, 'paper')
           .setOrigin(0, 0)
           .setCrop(px, py, pw, ph)
@@ -331,21 +329,56 @@ export default class EnvironmentManager {
       }
     }
 
+    // ----- TEXT POSITION (base) -----
+    let x = this.currentNode.x;
+    let y = this.currentNode.y;
+
+    // create text object with base style
+    const text = this.scene.add.text(x, y, '', style);
+    this.textState.textObject = text;
+
+    // ----- RTL / LTR handling -----
+    if (this.currentLanguage === 'fa') {
+      // compute paper right edge (fallback to node crop width if no paper)
+      const pw = this.currentNode.crop?.width ?? 0;
+      const paperLeft = this.currentNode.x - 40; // matches how paper was placed
+      const rightEdgeX = paperLeft + pw;
+      button3.innerHTML = 'FA';
+
+      // anchor to right and place at right edge (subtract small padding if needed)
+      const paddingRight = 12; // tweak if you want more/less inner margin
+      text.setOrigin(1, 0);                    // anchor at right
+      text.setX(rightEdgeX - paddingRight);    // align right edge inside paper
+      text.setStyle({ align: 'right', direction: 'rtl' }); // update style after creation
+    } else if (this.currentLanguage === 'en') {
+      // LTR: anchor left and ensure left X (you can add left padding if needed)
+      const paddingLeft = 0;
+      text.setOrigin(0, 0);
+      text.setX(this.currentNode.x + paddingLeft);
+      text.setStyle({ align: 'left', direction: 'ltr' });
+      button3.innerHTML = 'EN';
+    }
+
+    // ----- ANIMATION -----
     let i = 0;
-    const fullText = line;
+    const lineObj = sequence[index];
+    const fullText = (lineObj && lineObj[this.currentLanguage]) || "";
     this.textState.isAnimating = true;
 
-    // Save the timed event so we can cancel it on fast-forward
+    // Cancel any previous event
+    if (this.textState.animEvent) {
+      this.textState.animEvent.remove(false);
+      this.textState.animEvent = null;
+    }
+
     this.textState.animEvent = this.scene.time.addEvent({
       delay: 30,
-      repeat: fullText.length - 1,
+      repeat: Math.max(0, fullText.length - 1),
       callback: () => {
-        if (!text.active || !text.scene) return; // Prevent crash if destroyed
-
+        if (!text.active || !text.scene) return;
         const char = fullText[i];
         text.text += char;
 
-        // 🔊 Play type sound (skip for spaces/punctuation if you like)
         if (char === " " || i === fullText.length - 1) {
           this.scene.playSFX(this.scene.textSFX, 0.5);
         }
@@ -357,12 +390,18 @@ export default class EnvironmentManager {
         }
       }
     });
+
     text.setDepth(1);
   }
+
 
   _textForward() {
     const node = this.currentNode;
     if (!node.textSequence || !this.textState) return;
+
+    const lineObj = this.textState.sequence[this.textState.index];
+    const fullText = lineObj[this.currentLanguage] || "";
+    this.textState.textObject.setText(fullText);
 
     // If animating, fast-forward (cancel timer, reveal full text)
     if (this.textState.isAnimating) {
@@ -370,7 +409,6 @@ export default class EnvironmentManager {
         this.textState.animEvent.remove(false);
         this.textState.animEvent = null;
       }
-      const fullText = this.textState.sequence[this.textState.index];
       this.textState.textObject.setText(fullText);
       this.textState.isAnimating = false;
       return; // Important: stop here, don't start new animation
@@ -399,6 +437,10 @@ export default class EnvironmentManager {
     const node = this.currentNode;
     if (!node || node.envType !== 'text' || !this.textState) return;
 
+    const lineObj = this.textState.sequence[this.textState.index];
+    const fullText = lineObj[this.currentLanguage] || "";
+    this.textState.textObject.setText(fullText);
+
     // 1) If currently animating, finish this line immediately (fast-forward)
     if (this.textState.isAnimating) {
       if (this.textState.animEvent) {
@@ -406,7 +448,6 @@ export default class EnvironmentManager {
         this.textState.animEvent = null;
       }
 
-      const fullText = this.textState.sequence[this.textState.index];
       if (this.textState.textObject && fullText !== undefined) {
         this.textState.textObject.setText(fullText);
       }
