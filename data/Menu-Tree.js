@@ -1,16 +1,9 @@
 export const MENU_TREE = {
+  textColor: '#C0C0C0', // global default
   root: {
     id: 'root',
     type: 'menu',
-    envType: 'split',
-    background: 'background-root',
-    movingPart: {
-      key: 'fire-root',
-      anim: 'fire-root',
-      x: 206,
-      y: 168,
-      config: { start: 0, end: 23, frameRate: 10, loop: true }
-    },
+    useTheme: true,
     children: ['play', 'options', 'about'],
     menuItems: ['Play', 'Options', 'About']
   },
@@ -70,85 +63,47 @@ export const MENU_TREE = {
   options: {
     id: 'options',
     type: 'menu',
-    envType: 'solid',
     parent: 'root',
-    background: 'options-loop',
-    animation: {
-      start: 0,
-      end: 10,
-      frameRate: 18,
-      loop: true,
-      x: 320,
-      y: 180
-    },
-    enterAnimation: 'options-enter',
-    exitAnimation: 'options-exit',
-    enterSFX: 'sfx_torch-up',
-    exitSFX: 'sfx_torch-down',
-    transitionConfig: {
-      frameRate: 25,
-      start: 0,
-      end: 9
-    },
-    useSpriteAnimation: true,
-    children: ['audio', 'controls', 'themes'],
-    menuItems: ['Audio', 'Controls', 'Themes']
+    useTheme: true,
+    children: ['sound', 'appearance'],
+    menuItems: ['Sound', 'Appearance']
   },
 
-  audio: {
-    id: 'audio',
+  // === SOUND SUBMENU ===
+
+  sound: {
+    id: 'sound',
     type: 'menu',
     envType: 'inherit',
     parent: 'options',
-    background: 'background-audio',
-    menuItems: [
-      'Music: OFF',
-      'Sound Pack: Blacksmith-1',
-      'Volume',
-      'Reset Default'
-    ],
+    useTheme: true,
     children: ['music', 'sound_pack', 'volume', 'reset_audio']
   },
 
   music: {
     id: 'music',
     type: 'option',
-    parent: 'audio',
+    parent: 'sound',
     label: 'Music',
-    options: ['OFF', 'Track-1', 'Track-2', 'Track-3'],
-    currentIndex: 0
+    useTheme: true,
   },
 
   sound_pack: {
     id: 'sound_pack',
     type: 'option',
-    parent: 'audio',
+    parent: 'sound',
     label: 'Sound Pack',
-    options: ['Blacksmith-1', 'Blacksmith-2', 'Fight-1', 'Fight-2', 'Digital-1', 'Digital-2',],
+    useTheme: true,
     currentIndex: 0,
-    srcs: [
-      { hover: 'hammer1_hover', select: 'hammer1_select', back: 'hammer1_back', text: 'hammer1_text' },
-      { hover: 'hammer2_hover', select: 'hammer2_select', back: 'hammer2_back', text: 'hammer2_text' },
-      { hover: 'fight1_hover', select: 'fight1_select', back: 'fight1_back', text: 'fight1_text' },
-      { hover: 'fight2_hover', select: 'fight2_select', back: 'fight2_back', text: 'fight2_text' },
-      { hover: 'digital1_hover', select: 'digital1_select', back: 'digital1_back', text: 'digital1_text' },
-      { hover: 'digital2_hover', select: 'digital2_select', back: 'digital2_back', text: 'digital2_text' }
-    ]
   },
 
   volume: {
     id: 'volume',
     type: 'menu',
     envType: 'inherit', // seamless like audio
-    parent: 'audio',
+    parent: 'sound',
     label: 'Volume',
-    background: 'background-audio', // reuse same bg for seamless look
-    menuItems: [
-      'Music: 25%',
-      'Environment: 100%',
-      'UI: 75%'
-    ],
-    children: ['music_volume', 'environment_volume', 'ui_volume']
+    useTheme: true,
   },
 
   music_volume: {
@@ -181,93 +136,53 @@ export const MENU_TREE = {
   reset_audio: {
     id: 'reset_audio',
     type: 'option',
-    parent: 'audio',
+    parent: 'sound',
     label: 'Reset Default'
   },
 
-  // under development
+  // === APPEARANCE SUBMENU ===
 
-  // controls: {
-  //   id: 'controls',
-  //   type: 'menu',
-  //   envType: 'inherit',
-  //   parent: 'options',
-  //   background: 'background-controls',
-  //   menuItems: [],
-  //   children: []
-  // },
-
-  controls: {
-    id: 'controls',
+  appearance: {
+    id: 'appearance',
     type: 'menu',
-    envType: 'text',
+    envType: 'inherit',
     parent: 'options',
-    x: 60,
-    y: 45,
-    fill: 'black',
-    crop: {
-      width: 570,
-      height: 325
-    },
-    textSequence: [
-      {
-        en: "This part is under development...",
-        fa: "...این بخش در دست ساخت است"
-      },
-    ]
+    useTheme: true,
+    menuItems: [
+      'Theme: Mythological',
+      'Grip Color: Dark Gray',
+      'Buttons Shape: Rounded-Big',
+      'Buttons Color: Almost Black'
+    ],
+    children: ['theme', 'grip_color', 'buttons_shape', 'buttons_color']
   },
 
-  // under development
-
-  themes: {
-    id: 'themes',
-    type: 'menu',
-    envType: 'text',
-    parent: 'options',
-    x: 60,
-    y: 45,
-    fill: 'black',
-    crop: {
-      width: 570,
-      height: 325
-    },
-    textSequence: [
-      {
-        en: "This part is under development...",
-        fa: "...این بخش در دست ساخت است"
-      },
-    ]
+  theme: {
+    id: 'theme',
+    type: 'option',
+    parent: 'appearance',
+    label: 'Theme',
+    options: ['Mythological', 'Space'],
+    currentIndex: 0
   },
-  // themes: {
-  //   id: 'themes',
-  //   type: 'menu',
-  //   envType: 'inherit',
-  //   parent: 'options',
-  //   background: 'background-themes',
-  //   menuItems: [],
-  //   children: []
-  // },
+
+
+  // === ABOUT MENU ===
 
   about: {
     id: 'about',
     type: 'menu',
-    envType: 'split',
     parent: 'root',
-    background: 'background-about',
-    movingPart: {
-      key: 'fire-about',
-      x: 424,
-      y: 166,
-      config: { start: 0, end: 23, frameRate: 10, loop: true }
-    },
-    children: ['project-info', 'grip-guide'],
+    useTheme: true,
+    children: ['project_info', 'grip_guide'],
     menuItems: ['Project Info', 'Grip Guide']
   },
 
-  'project-info': {
-    id: 'project-info',
+  'project_info': {
+    id: 'project_info',
     type: 'menu',
     envType: 'text',
+    useTheme: true,
     parent: 'about',
     x: 60,
     y: 45,
@@ -313,10 +228,11 @@ export const MENU_TREE = {
 
   },
 
-  'grip-guide': {
-    id: 'grip-guide',
+  'grip_guide': {
+    id: 'grip_guide',
     type: 'menu',
     envType: 'text',
+    useTheme: true,
     parent: 'about',
     x: 60,
     y: 45,

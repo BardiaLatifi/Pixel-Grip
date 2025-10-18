@@ -23,13 +23,16 @@ export default class EnvironmentManager {
     const nextNode = this.tree[nodeId];
     if (!nextNode) return;
 
-    const currentNode = this.currentNode;
+    const currentNode = this.currentNode; // ✅ this is effectively your "prevNode"
 
     // ⬇️ Going deeper (into a child)
     if (currentNode?.children?.includes(nodeId)) {
       this.pathStack.push(nodeId);
 
-      if (nextNode.id !== 'options') {
+      // ✅ Dynamic enter sound
+      if (nextNode.enterSFX) {
+        this.scene.playSFX(nextNode.enterSFX, 0.8);
+      } else {
         this.scene.playSFX(this.scene.selectSFX, 0.8);
       }
 
@@ -52,18 +55,26 @@ export default class EnvironmentManager {
     if (goingBack) {
       this.pathStack.pop();
 
-      if (currentNode.id !== 'options') {
+      // ✅ Dynamic exit sound
+      if (currentNode.exitSFX) {
+        this.scene.playSFX(currentNode.exitSFX, 0.8);
+      } else {
         this.scene.playSFX(this.scene.backSFX, 0.8);
       }
 
       // Skip enter anim for parent if current (child) was 'inherit'
-      const skipEnterAnim = currentNode?.envType === "inherit" || currentNode?.envType === "text";
+      const skipEnterAnim =
+        currentNode?.envType === "inherit" || currentNode?.envType === "text";
 
       // But still run child's exit animation if defined
       if (currentNode?.exitAnimation) {
-        this.transitionAnim(currentNode.exitAnimation, () => {
-          this._completeTransition(nextNode, { skipEnterAnim });
-        }, currentNode.exitSFX);
+        this.transitionAnim(
+          currentNode.exitAnimation,
+          () => {
+            this._completeTransition(nextNode, { skipEnterAnim });
+          },
+          currentNode.exitSFX
+        );
       } else {
         this._completeTransition(nextNode, { skipEnterAnim });
       }
@@ -119,18 +130,20 @@ export default class EnvironmentManager {
   applyEnvironment(node) {
     if (!node) return;
 
+    // Handle text mode button visibility
     if (node.envType === 'text') {
       button3.style.display = 'block';
-      button3.innerHTML = 'EN';   // 🔹 default
+      button3.innerHTML = 'EN';
     } else {
       button3.style.display = 'none';
     }
 
+    // Clear previous environment if needed
     if (node.envType !== 'inherit' && node.envType !== 'text') {
       this.clearEnv();
     }
 
-    // Normal environment application for split/solid/transition
+    // Apply the correct visual environment
     switch (node.envType) {
       case "split":
         this.splittedAnim(node);
@@ -142,17 +155,42 @@ export default class EnvironmentManager {
         this.transitionAnim(node);
         break;
       case "text":
-        this._applyTextEnvironment(node)
+        this._applyTextEnvironment(node);
         break;
       default:
         console.warn(`EnvironmentManager: Unknown envType '${node.envType}' for node '${node.id}'`);
     }
 
-    console.log(`EnvironmentManager: Applied environment for '${node.id}'`);
-  }
+    // 🎧 Apply environment sounds if defined
+    if (node.environmentSounds) {
+      this.scene.sound.sounds.forEach(sound => {
+        if (sound.key.startsWith('sfx_')) sound.stop();
+      });
 
-  getCurrent() {
-    // Return the current environment node
+      node.environmentSounds.forEach(snd => {
+        this.scene.playSFX(snd.key, snd.volume ?? 1, snd.loop ?? true);
+      });
+
+      console.log(`[EnvironmentManager] Environment sounds applied for '${node.id}'`);
+    }
+
+    // 🎵 Apply default theme music only once, on root
+    if (node.id === 'root' && !this.scene.currentMusic) {
+      const musicNode = MENU_TREE['music'];
+      if (musicNode && musicNode.options && musicNode.currentIndex != null) {
+        const track = musicNode.options[musicNode.currentIndex];
+        if (track !== 'OFF') {
+          this.scene.currentMusic = this.scene.sound.add(track, {
+            volume: this.scene.volumeSettings.music ?? 0.25,
+            loop: true,
+          });
+          this.scene.currentMusic.play();
+          console.log(`[EnvironmentManager] Default theme music started: ${track}`);
+        }
+      }
+    }
+
+    console.log(`EnvironmentManager: Applied environment for '${node.id}'`);
   }
 
   clearEnv() {

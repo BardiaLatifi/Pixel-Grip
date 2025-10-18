@@ -74,7 +74,28 @@ export function AudioSystem(scene, childNode) {
         }
       });
     }
-  } else {
+
+    // ✅ NEW: Restart default music if theme or menuTree says it’s not OFF
+    const musicNode = MENU_TREE['music'];
+    const currentTheme = scene.customization?.themes?.[scene.customization?.currentTheme];
+    const themeMusicIndex = currentTheme?.music?.currentIndex ?? null;
+
+    const effectiveIndex = themeMusicIndex !== null ? themeMusicIndex : musicNode.currentIndex;
+    const track = musicNode.options[effectiveIndex];
+
+    if (track && track !== 'OFF') {
+      scene.currentMusic = scene.sound.add(track, {
+        volume: scene.volumeSettings.music,
+        loop: true
+      });
+      scene.currentMusic.play();
+    }
+
+    // ✅ Update music label so UI matches
+    rebuildMenuLabel(musicNode);
+  }
+
+  else {
     // Cycle to next option
     childNode.currentIndex = (childNode.currentIndex + 1) % childNode.options.length;
 

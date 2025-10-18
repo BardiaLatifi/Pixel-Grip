@@ -1,5 +1,7 @@
 // scenes/MainMenuScene.js
 import { MENU_TREE } from '../data/Menu-Tree.js';
+import { THEMES } from '../data/Themes.js';
+import { Customization } from '../tools/Customization.js';
 import EnvironmentManager from '../tools/EnvironmentManager.js';
 import { inputHandlers } from '../tools/InputHandlers.js';
 
@@ -43,8 +45,12 @@ export class MainMenuScene extends Phaser.Scene {
     // === 1. Init Environment Manager ===
     this.environmentManager = new EnvironmentManager(this);
     this.currentNodeId = 'root';
-    this.environmentManager.applyEnvironment(MENU_TREE[this.currentNodeId]);
 
+    // ✅ Apply theme customization FIRST
+    Customization.applyTheme('Space'); // or your default theme name
+
+
+    this.environmentManager.applyEnvironment(MENU_TREE[this.currentNodeId]);
 
     // === 2. Init Menu State ===
     this.menuTree = MENU_TREE;
@@ -58,26 +64,25 @@ export class MainMenuScene extends Phaser.Scene {
     this.updateMenuHighlight();
 
     // === 7. Setup Input Listeners ===
-
     this.cameras.main.fadeIn(800, 0, 0, 0);
 
-    // // === 8. Define default Sound Pack ===
-
+    // === 8. Define default Sound Pack ===
     const defaultPackNode = MENU_TREE['sound_pack'];
     defaultPackNode.currentIndex = 0;
+
+    // 🔒 Add safety check
+    if (!defaultPackNode.srcs || defaultPackNode.srcs.length === 0) {
+      console.warn('No sound pack sources found. Did Customization.init() apply correctly?');
+      return;
+    }
+
     const pack = defaultPackNode.srcs[defaultPackNode.currentIndex];
     this.hoverSFX = pack.hover;
     this.selectSFX = pack.select;
     this.backSFX = pack.back;
     this.textSFX = pack.text;
 
-
-    // === 9. bg sounds ===
-
-    this.playSFX('sfx_fire', 1, true);
-    this.playSFX('sfx_wind', 0.1, true);
   }
-
 
   clearMenuTexts() {
     if (this.menuTexts) {
@@ -102,15 +107,16 @@ export class MainMenuScene extends Phaser.Scene {
 
     // 3. Re-create text objects
     this.menuTexts = this.menuItems.map((label, index) => {
+      const globalColor = MENU_TREE.textColor;
       const isSelected = index === this.currentIndex;
       const text = this.add.text(320, startY + index * spacing, label, {
         fontFamily: 'sans-serif',
         fontSize: '24px',
-        color: isSelected ? '#fff' : '#999',
+        color: isSelected ? globalColor : Phaser.Display.Color.HexStringToColor(globalColor).darken(10).rgba,
       }).setOrigin(0.5);
 
       text.setScale(isSelected ? 1 : 0.85);
-      text.setAlpha(isSelected ? 1 : 0.75);
+      text.setAlpha(isSelected ? 1 : 0.70);
       text.setDepth(1); // ✅ Ensure it’s above background
 
       return text;
@@ -121,12 +127,13 @@ export class MainMenuScene extends Phaser.Scene {
     this.menuTexts.forEach((text, i) => {
       const isSelected = i === this.currentIndex;
 
-      text.setColor(isSelected ? '#fff' : '#999');
+      const color = MENU_TREE.textColor;
+      text.setColor(isSelected ? color : Phaser.Display.Color.HexStringToColor(color).darken(10).rgba);
 
       this.tweens.add({
         targets: text,
         scale: isSelected ? 1 : 0.85,
-        alpha: isSelected ? 1 : 0.75,
+        alpha: isSelected ? 1 : 0.70,
         duration: 200,
         ease: 'Quad.easeOut',
       });
