@@ -147,8 +147,10 @@ export class BootScene extends Phaser.Scene {
   }
 
   playSFX(key, volume = 1, loop = false) {
-    const sound = this.sound.add(key, { volume, loop });
-    sound.play();
-    return sound; // optional, if you want to stop it later
+    return this.sound.play(key, {
+      volume,
+      loop,
+      ignoreScene: true   // ⭐ THIS is the fix
+    });
   }
 }

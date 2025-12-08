@@ -163,9 +163,6 @@ export default class EnvironmentManager {
 
     // 🎧 Apply environment sounds if defined
     if (node.environmentSounds) {
-      this.scene.sound.sounds.forEach(sound => {
-        if (sound.key.startsWith('sfx_')) sound.stop();
-      });
 
       node.environmentSounds.forEach(snd => {
         this.scene.playSFX(snd.key, snd.volume ?? 1, snd.loop ?? true);

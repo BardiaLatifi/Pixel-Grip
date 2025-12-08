@@ -47,7 +47,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.currentNodeId = 'root';
 
     // ✅ Apply theme customization FIRST
-    Customization.applyTheme('Space'); // or your default theme name
+    Customization.applyTheme('Mythological'); // or your default theme name
 
 
     this.environmentManager.applyEnvironment(MENU_TREE[this.currentNodeId]);
