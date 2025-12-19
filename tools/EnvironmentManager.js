@@ -140,7 +140,7 @@ export default class EnvironmentManager {
 
     // Clear previous environment if needed
     if (node.envType !== 'inherit' && node.envType !== 'text') {
-      this.clearEnv();
+      this.cleanupThemeAssets();
     }
 
     // Apply the correct visual environment
@@ -190,7 +190,7 @@ export default class EnvironmentManager {
     console.log(`EnvironmentManager: Applied environment for '${node.id}'`);
   }
 
-  clearEnv() {
+  cleanupThemeAssets() {
     if (this.background) {
       this.background.destroy();
       this.background = null;
@@ -219,7 +219,7 @@ export default class EnvironmentManager {
       return;
     }
 
-    this.clearEnv();
+    this.cleanupThemeAssets();
 
     const bgKey = node.background;
     if (!bgKey) {

@@ -138,6 +138,15 @@ export const THEMES = {
 
     about: {
       envType: 'solid',
+      background: 'space-background-root',
+      animation: {
+        start: 0,
+        end: 4,
+        frameRate: 15,
+        loop: true,
+        x: 320,
+        y: 180
+      }
     }
   }
 };

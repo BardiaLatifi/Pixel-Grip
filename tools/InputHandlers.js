@@ -1,5 +1,6 @@
 import { MENU_TREE } from '../data/Menu-Tree.js';
 import { AudioSystem } from './AudioSystem.js';
+import { Customization } from './Customization.js';
 
 
 export function inputHandlers(scene) {
@@ -86,8 +87,33 @@ export function inputHandlers(scene) {
       const childNode = MENU_TREE[selectedChildId];
 
       if (childNode.type === 'option') {
-        // --- Trigger centralized AudioSystem function ---
-        AudioSystem(scene, childNode);
+        // Special case: Theme switching
+        if (childNode.id === 'theme') {
+          // Cycle to next theme
+          childNode.currentIndex = (childNode.currentIndex + 1) % childNode.options.length;
+          const themeName = childNode.options[childNode.currentIndex];
+
+          // ✅ Save currentIndex before applyTheme (which resets MENU_TREE)
+          const savedIndex = childNode.currentIndex;
+
+          // Apply the new theme
+          Customization.applyTheme(themeName, scene);
+
+          // ✅ Restore currentIndex after reset
+          MENU_TREE['theme'].currentIndex = savedIndex;
+
+          // Update the menu label
+          const currentNode = MENU_TREE[scene.currentNodeId];
+          const index = currentNode.children.indexOf(childNode.id);
+          currentNode.menuItems[index] = `${childNode.label}: ${themeName}`;
+
+          // Refresh display
+          scene.renderMenuItems();
+        } else {
+          // --- Trigger centralized AudioSystem function ---
+          AudioSystem(scene, childNode);
+        }
+
       } else {
         // Old behavior: go to submenu or text node
         envManager.goTo(selectedChildId);
