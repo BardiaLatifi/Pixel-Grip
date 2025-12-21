@@ -67,8 +67,12 @@ export const Customization = (() => {
       return;
     }
 
+    scene.currentPaper = themeData.paper;
+    scene.menuTextColor = themeData.menuTextColor;
+    scene.currentTextNodeColor = themeData.textNodeColor;
+
     // Global properties
-    const globalKeys = ['textColor', 'menuFont', 'highlightColor'];
+    const globalKeys = ['menuTextColor', 'menuFont', 'highlightColor'];
     for (const key of globalKeys) {
       if (themeData[key] !== undefined) {
         MENU_TREE[key] = themeData[key];

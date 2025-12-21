@@ -1,6 +1,7 @@
 export const THEMES = {
   Mythological: {
-    textColor: '#E8E8E8',
+    menuTextColor: '#ffffff',
+    textNodeColor: 'black',
     root: {
       envType: 'split',
       background: 'background-root',
@@ -82,11 +83,14 @@ export const THEMES = {
         y: 166,
         config: { start: 0, end: 23, frameRate: 10, loop: true }
       },
-    }
+    },
+
+    paper: 'paper-Myth-1'
   },
 
   Space: {
-    textColor: '#FFFFFF',
+    menuTextColor: '#ffffff',
+    textNodeColor: '#c8fffa',
     root: {
       envType: 'solid',
       background: 'space-background-root',
@@ -147,6 +151,8 @@ export const THEMES = {
         x: 320,
         y: 180
       }
-    }
+    },
+
+    paper: 'paper-Space-1'
   }
 };

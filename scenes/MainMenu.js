@@ -47,7 +47,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.currentNodeId = 'root';
 
     // ✅ Apply theme customization FIRST
-    Customization.applyTheme('Mythological'); // or your default theme name
+    Customization.applyTheme('Mythological', this); // or your default theme name
 
 
     this.environmentManager.applyEnvironment(MENU_TREE[this.currentNodeId]);
@@ -107,12 +107,14 @@ export class MainMenuScene extends Phaser.Scene {
 
     // 3. Re-create text objects
     this.menuTexts = this.menuItems.map((label, index) => {
-      const globalColor = MENU_TREE.textColor;
+      const baseColor = this.menuTextColor;
       const isSelected = index === this.currentIndex;
       const text = this.add.text(320, startY + index * spacing, label, {
         fontFamily: 'sans-serif',
         fontSize: '24px',
-        color: isSelected ? globalColor : Phaser.Display.Color.HexStringToColor(globalColor).darken(10).rgba,
+        color: isSelected
+          ? baseColor
+          : Phaser.Display.Color.HexStringToColor(baseColor).darken(10).rgba,
       }).setOrigin(0.5);
 
       text.setScale(isSelected ? 1 : 0.85);
@@ -127,8 +129,12 @@ export class MainMenuScene extends Phaser.Scene {
     this.menuTexts.forEach((text, i) => {
       const isSelected = i === this.currentIndex;
 
-      const color = MENU_TREE.textColor;
-      text.setColor(isSelected ? color : Phaser.Display.Color.HexStringToColor(color).darken(10).rgba);
+      const baseColor = this.menuTextColor;
+      text.setColor(
+        isSelected
+          ? baseColor
+          : Phaser.Display.Color.HexStringToColor(baseColor).darken(10).rgba
+      );
 
       this.tweens.add({
         targets: text,

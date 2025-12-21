@@ -1,5 +1,4 @@
 export const MENU_TREE = {
-  textColor: '#C0C0C0', // global default
   root: {
     id: 'root',
     type: 'menu',
@@ -15,7 +14,6 @@ export const MENU_TREE = {
     parent: 'root',
     x: 60,
     y: 45,
-    fill: 'black',
     crop: {
       width: 570,
       height: 315
@@ -186,7 +184,6 @@ export const MENU_TREE = {
     parent: 'about',
     x: 60,
     y: 45,
-    fill: 'black',
     crop: {
       width: 570,
       height: 315
@@ -236,7 +233,6 @@ export const MENU_TREE = {
     parent: 'about',
     x: 60,
     y: 45,
-    fill: 'black',
     crop: {
       width: 570,
       height: 325

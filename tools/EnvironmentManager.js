@@ -345,7 +345,7 @@ export default class EnvironmentManager {
       fontSize: this.currentLanguage === 'fa' ? '16px' : '19px',
       fontFamily: this.currentLanguage === 'fa' ? 'Vazirmatn' : 'EB Garamond',
       fontWeight: this.currentLanguage === 'fa' ? '400' : '800',
-      fill: this.currentNode.fill,
+      fill: this.currentNode.fill ?? this.scene.currentTextNodeColor,
       wordWrap: { width: this.currentNode.crop?.width || 0, useAdvancedWrap: true }
     };
 
@@ -357,7 +357,7 @@ export default class EnvironmentManager {
         const py = 0;
         const pw = this.currentNode.crop.width;
         const ph = this.currentNode.crop.height;
-        this.textState.paperObject = this.scene.add.image(this.currentNode.x - 25, this.currentNode.y - 25, 'paper')
+        this.textState.paperObject = this.scene.add.image(this.currentNode.x - 25, this.currentNode.y - 25, this.scene.currentPaper)
           .setOrigin(0, 0)
           .setCrop(px, py, pw, ph)
           .setDepth(0);

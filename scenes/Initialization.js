@@ -17,54 +17,43 @@ export class Initialization extends Phaser.Scene {
 
 
     // *** Root Assets ***
-    this.load.image('background-root', 'assets/main-menu/bg-root.png');
+    this.load.image('background-root', 'assets/main-menu/Themes/Mythological-1/bg-root.png');
 
-    this.load.spritesheet('fire-root', 'assets/main-menu/fire-root.png', {
+    this.load.spritesheet('fire-root', 'assets/main-menu/Themes/Mythological-1/fire-root.png', {
       frameWidth: 120,
       frameHeight: 80
     });
 
-    this.load.spritesheet('space-background-root', 'assets/main-menu/space-background-root.png', {
+    this.load.spritesheet('space-background-root', 'assets/main-menu/Themes/Space-1/space-background-root.png', {
       frameWidth: 640,
       frameHeight: 360
     });
 
     // *** Options Assets ***
-    this.load.spritesheet('options-enter', 'assets/main-menu/options-enter.png', {
+    this.load.spritesheet('options-enter', 'assets/main-menu/Themes/Mythological-1/options-enter.png', {
       frameWidth: 640,
       frameHeight: 360
     });
-    this.load.spritesheet('options-loop', 'assets/main-menu/options-loop.png', {
+    this.load.spritesheet('options-loop', 'assets/main-menu/Themes/Mythological-1/options-loop.png', {
       frameWidth: 640,
       frameHeight: 360
     });
-    this.load.spritesheet('options-exit', 'assets/main-menu/options-exit.png', {
+    this.load.spritesheet('options-exit', 'assets/main-menu/Themes/Mythological-1/options-exit.png', {
       frameWidth: 640,
       frameHeight: 360
     });
 
     // *** About Assets ***
-    this.load.image('background-about', 'assets/main-menu/bg-about.png');
+    this.load.image('background-about', 'assets/main-menu/Themes/Mythological-1/bg-about.png');
 
-    this.load.spritesheet('fire-about', 'assets/main-menu/fire-about.png', {
+    this.load.spritesheet('fire-about', 'assets/main-menu/Themes/Mythological-1/fire-about.png', {
       frameWidth: 208,
       frameHeight: 144
     });
 
     // the Paper
-    this.load.image('paper-static', 'assets/main-menu/paper-static.png');
-
-    this.load.spritesheet('paper-expand', 'assets/main-menu/paper-expand.png', {
-      frameWidth: 480,
-      frameHeight: 270
-    });
-
-    this.load.spritesheet('paper-collapse', 'assets/main-menu/paper-collapse.png', {
-      frameWidth: 480,
-      frameHeight: 270
-    });
-
-    this.load.image('paper', 'assets/main-menu/paper.png');
+    this.load.image('paper-Myth-1', 'assets/main-menu/Themes/Mythological-1/paper.png');
+    this.load.image('paper-Space-1', 'assets/main-menu/Themes/Space-1/paper.png');
 
     // **** Sound Effects ****// 
     {
