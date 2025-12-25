@@ -28,14 +28,15 @@ export const Customization = (() => {
   function applyTheme(themeName, scene) {
 
     // 1. Cleanup old theme (only when switching)
-    if (scene) {
-      // Stop all sounds
-      if (scene.sound && scene.sound.sounds) {
-        scene.sound.sounds.forEach(s => {
+    if (scene && scene.sound && scene.sound.sounds) {
+      // Stop all looped Theme sounds
+      scene.sound.sounds.forEach(s => {
+        if (s.loop) {
           s.stop();
           s.destroy();
-        });
-      }
+        }
+      });
+
       scene.currentMusic = null;
 
       // Destroy visual assets

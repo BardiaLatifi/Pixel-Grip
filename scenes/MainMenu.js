@@ -49,9 +49,6 @@ export class MainMenuScene extends Phaser.Scene {
     // ✅ Apply theme customization FIRST
     Customization.applyTheme('Mythological', this); // or your default theme name
 
-
-    this.environmentManager.applyEnvironment(MENU_TREE[this.currentNodeId]);
-
     // === 2. Init Menu State ===
     this.menuTree = MENU_TREE;
     this.currentNode = this.menuTree.root;

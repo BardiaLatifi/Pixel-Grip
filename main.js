@@ -6,7 +6,7 @@ import { BootScene } from './scenes/BootScene.js';
 import { MainMenuScene } from './scenes/MainMenu.js'
 
 // === Debugging Control ===
-const DEBUG_SCENE = "MainMenuScene"; // Set to null to use full flow (BootScene etc.)
+const DEBUG_SCENE = null; // Set to null to use full flow (BootScene etc.)
 window.DEBUG_SCENE = DEBUG_SCENE;    // Expose for scene logic if needed
 
 // === Dynamic Scene List ===
