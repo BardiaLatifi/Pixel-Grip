@@ -110,7 +110,7 @@ export const MENU_TREE = {
     parent: 'volume',
     label: 'Music',
     options: ['Mute', '25%', '50%', '75%', '100%'],
-    currentIndex: 1 // default 50%
+    currentIndex: 3 // default 75%
   },
 
   environment_volume: {
@@ -160,7 +160,7 @@ export const MENU_TREE = {
     type: 'option',
     parent: 'appearance',
     label: 'Theme',
-    options: ['Mythological', 'Space'],
+    options: ['Mythological', 'Space', 'Space-2'],
     currentIndex: 0
   },
 

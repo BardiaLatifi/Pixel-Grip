@@ -53,7 +53,7 @@ export const Customization = (() => {
       const uiVol = MENU_TREE['ui_volume'];
 
       scene.volumeSettings = {
-        music: musicVol ? (musicVol.options[musicVol.currentIndex] === 'Mute' ? 0 : parseInt(musicVol.options[musicVol.currentIndex]) / 100) : 0.25,
+        music: musicVol ? (musicVol.options[musicVol.currentIndex] === 'Mute' ? 0 : parseInt(musicVol.options[musicVol.currentIndex]) / 100) : 0.75,
         environment: envVol ? (envVol.options[envVol.currentIndex] === 'Mute' ? 0 : parseInt(envVol.options[envVol.currentIndex]) / 100) : 1,
         ui: uiVol ? (uiVol.options[uiVol.currentIndex] === 'Mute' ? 0 : parseInt(uiVol.options[uiVol.currentIndex]) / 100) : 0.75
       };
@@ -131,7 +131,7 @@ export const Customization = (() => {
         const track = musicNode.options[musicNode.currentIndex];
         if (track !== 'OFF') {
           scene.currentMusic = scene.sound.add(track, {
-            volume: scene.volumeSettings.music ?? 0.25,
+            volume: scene.volumeSettings.music ?? 0.75,
             loop: true
           });
           scene.currentMusic.play();

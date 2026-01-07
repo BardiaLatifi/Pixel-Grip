@@ -3,7 +3,7 @@ import { MENU_TREE } from '../data/Menu-Tree.js';
 export function AudioSystem(scene, childNode) {
   const currentNode = MENU_TREE[scene.currentNodeId];
   if (!scene.volumeSettings) {
-    scene.volumeSettings = { music: 0.25, environment: 1, ui: 0.75 };
+    scene.volumeSettings = { music: 0.75, environment: 1, ui: 0.75 };
   }
 
   // --- Helper to rebuild menuItems dynamically ---
@@ -24,7 +24,7 @@ export function AudioSystem(scene, childNode) {
     // Reset all children to default
     MENU_TREE['music'].currentIndex = 0;
     MENU_TREE['sound_pack'].currentIndex = 0;
-    MENU_TREE['music_volume'].currentIndex = 1;        // 25%
+    MENU_TREE['music_volume'].currentIndex = 3;        // 75%
     MENU_TREE['environment_volume'].currentIndex = 4;  // 100%
     MENU_TREE['ui_volume'].currentIndex = 3;           // 75%
 
@@ -40,7 +40,7 @@ export function AudioSystem(scene, childNode) {
     scene.textSFX = defaultPack.text;
 
     // Reset volume settings
-    scene.volumeSettings = { music: 0.25, environment: 1, ui: 0.75 };
+    scene.volumeSettings = { music: 0.75, environment: 1, ui: 0.75 };
 
     // Ensure volume submenu's entries show current option texts
     const volumeNode = MENU_TREE['volume'];

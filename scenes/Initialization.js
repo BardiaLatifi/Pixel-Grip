@@ -24,7 +24,12 @@ export class Initialization extends Phaser.Scene {
       frameHeight: 80
     });
 
-    this.load.spritesheet('space-background-root', 'assets/main-menu/Themes/Space-1/space-background-root.png', {
+    this.load.spritesheet('space-background-root', 'assets/main-menu/Themes/Space-1/space1-root.png', {
+      frameWidth: 640,
+      frameHeight: 360
+    });
+
+    this.load.spritesheet('space2-background-root', 'assets/main-menu/Themes/Space-2/space2-background-root.png', {
       frameWidth: 640,
       frameHeight: 360
     });
@@ -43,6 +48,16 @@ export class Initialization extends Phaser.Scene {
       frameHeight: 360
     });
 
+    this.load.spritesheet('space1-options', 'assets/main-menu/Themes/Space-1/space1-options.png', {
+      frameWidth: 640,
+      frameHeight: 360
+    });
+
+    this.load.spritesheet('space2-options', 'assets/main-menu/Themes/Space-2/space2-options.png', {
+      frameWidth: 640,
+      frameHeight: 360
+    });
+
     // *** About Assets ***
     this.load.image('background-about', 'assets/main-menu/Themes/Mythological-1/bg-about.png');
 
@@ -51,9 +66,20 @@ export class Initialization extends Phaser.Scene {
       frameHeight: 144
     });
 
+    this.load.spritesheet('space1-about', 'assets/main-menu/Themes/Space-1/space1-about.png', {
+      frameWidth: 640,
+      frameHeight: 360
+    });
+
+    this.load.spritesheet('space2-about', 'assets/main-menu/Themes/Space-2/space2-about.png', {
+      frameWidth: 640,
+      frameHeight: 360
+    });
+
     // the Paper
     this.load.image('paper-Myth-1', 'assets/main-menu/Themes/Mythological-1/paper.png');
     this.load.image('paper-Space-1', 'assets/main-menu/Themes/Space-1/paper.png');
+    this.load.image('paper-Space-2', 'assets/main-menu/Themes/Space-2/paper.png');
 
     // **** Sound Effects ****// 
     {
@@ -97,7 +123,7 @@ export class Initialization extends Phaser.Scene {
         this.load.audio('Track-3', 'assets/main-menu/audio/music/the-star-of-the-county-down.mp3');
       }
 
-      // ** Space Theme
+      // ** Space-1 Theme
       {
         // UI Sound Packs
         this.load.audio('digital1_hover', 'assets/main-menu/audio/digital-1/hover.wav');
@@ -114,6 +140,18 @@ export class Initialization extends Phaser.Scene {
         this.load.audio('Space-Track-1', 'assets/main-menu/audio/music/Soft-Background-Music.mp3');
         this.load.audio('Space-Track-2', 'assets/main-menu/audio/music/beautiful-piano.mp3');
       }
+
+      // ** Space-2 Theme
+
+      // UI Sound Packs
+      this.load.audio('digital3_hover', 'assets/main-menu/audio/digital-3/hover.wav');
+      this.load.audio('digital3_select', 'assets/main-menu/audio/digital-3/select.wav');
+
+      this.load.audio('digital4_hover', 'assets/main-menu/audio/digital-4/hover.wav');
+      this.load.audio('digital4_select', 'assets/main-menu/audio/digital-4/select.wav');
+      // Music
+      this.load.audio('Yokai-Mystery', 'assets/main-menu/audio/music/Yokai-Mystery.mp3');
+      this.load.audio('Skylab', 'assets/main-menu/audio/music/Skylab.mp3');
     }
 
   }

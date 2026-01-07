@@ -30,7 +30,7 @@ export class MainMenuScene extends Phaser.Scene {
 
     // Default volume categories
     this.volumeSettings = {
-      music: 0.25,
+      music: 0.75,
       environment: 1,
       ui: 0.75,
     };

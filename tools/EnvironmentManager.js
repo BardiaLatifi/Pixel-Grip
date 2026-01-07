@@ -178,7 +178,7 @@ export default class EnvironmentManager {
         const track = musicNode.options[musicNode.currentIndex];
         if (track !== 'OFF') {
           this.scene.currentMusic = this.scene.sound.add(track, {
-            volume: this.scene.volumeSettings.music ?? 0.25,
+            volume: this.scene.volumeSettings.music ?? 0.75,
             loop: true,
           });
           this.scene.currentMusic.play();

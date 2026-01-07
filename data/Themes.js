@@ -62,7 +62,7 @@ export const THEMES = {
     volume: {
       background: 'background-audio', // reuse same bg for seamless look
       menuItems: [
-        'Music: 25%',
+        'Music: 75%',
         'Environment: 100%',
         'UI: 75%'
       ],
@@ -97,7 +97,7 @@ export const THEMES = {
       animation: {
         start: 0,
         end: 4,
-        frameRate: 15,
+        frameRate: 10,
         loop: true,
         x: 320,
         y: 180
@@ -106,7 +106,16 @@ export const THEMES = {
     },
 
     options: {
-      envType: 'inherit',
+      envType: 'solid',
+      background: 'space1-options',
+      animation: {
+        start: 0,
+        end: 4,
+        frameRate: 10,
+        loop: true,
+        x: 320,
+        y: 180
+      }
     },
 
     sound: {
@@ -129,7 +138,7 @@ export const THEMES = {
     volume: {
       background: 'background-audio', // reuse same bg for seamless look
       menuItems: [
-        'Music: 25%',
+        'Music: 75%',
         'UI: 75%'
       ],
       children: ['music_volume', 'ui_volume']
@@ -142,11 +151,11 @@ export const THEMES = {
 
     about: {
       envType: 'solid',
-      background: 'space-background-root',
+      background: 'space1-about',
       animation: {
         start: 0,
         end: 4,
-        frameRate: 15,
+        frameRate: 10,
         loop: true,
         x: 320,
         y: 180
@@ -154,5 +163,82 @@ export const THEMES = {
     },
 
     paper: 'paper-Space-1'
-  }
+  },
+
+  "Space-2": {
+    menuTextColor: '#ffb0d9',
+    textNodeColor: '#ffe3f1',
+    root: {
+      envType: 'solid',
+      background: 'space2-background-root',
+      animation: {
+        start: 0,
+        end: 7,
+        frameRate: 10,
+        loop: true,
+        x: 320,
+        y: 180
+      },
+      environmentSounds: []
+    },
+
+    options: {
+      envType: 'solid',
+      background: 'space2-options',
+      animation: {
+        start: 0,
+        end: 7,
+        frameRate: 10,
+        loop: true,
+        x: 320,
+        y: 180
+      }
+    },
+
+    sound: {
+      menuItems: [
+        'Music: Yokai-Mystery',
+        'Sound Pack: Digital-Sound-1',
+        'Volume',
+        'Reset Default'
+      ],
+    },
+
+    sound_pack: {
+      options: ['Digital-Sound-3', 'Digital-Sound-4'],
+      srcs: [
+        { hover: 'digital3_hover', select: 'digital3_select', back: 'digital3_select', text: 'digital1_text' },
+        { hover: 'digital4_hover', select: 'digital4_select', back: 'digital4_select', text: 'digital2_text' }
+      ]
+    },
+
+    volume: {
+      background: 'background-audio', // reuse same bg for seamless look
+      menuItems: [
+        'Music: 75%',
+        'UI: 75%'
+      ],
+      children: ['music_volume', 'ui_volume']
+    },
+
+    music: {
+      options: ['Yokai-Mystery', 'Skylab', 'OFF'],
+      currentIndex: 0,
+    },
+
+    about: {
+      envType: 'solid',
+      background: 'space2-about',
+      animation: {
+        start: 0,
+        end: 7,
+        frameRate: 10,
+        loop: true,
+        x: 320,
+        y: 180
+      }
+    },
+
+    paper: 'paper-Space-2'
+  },
 };
